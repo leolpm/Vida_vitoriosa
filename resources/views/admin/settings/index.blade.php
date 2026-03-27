@@ -70,4 +70,99 @@
         </div>
     </form>
 </div>
+
+<div class="card-surface border border-danger-subtle bg-danger-subtle bg-opacity-10 p-4 mt-4">
+    <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
+        <div class="pe-lg-3">
+            <div class="section-eyebrow text-danger mb-2">Zona de risco</div>
+            <h2 class="h5 mb-2">Resetar sistema</h2>
+            <p class="mb-0 text-secondary">
+                Apaga todos os participantes, depoimentos, PDFs gerados e imagens dos depoimentos.
+                Essa ação não pode ser revertida.
+            </p>
+        </div>
+        <button class="btn btn-outline-danger btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#resetSystemModal">
+            <i class="bi bi-trash3 me-2"></i>
+            Resetar sistema
+        </button>
+    </div>
+</div>
+
+<div class="modal fade" id="resetSystemModal" tabindex="-1" aria-labelledby="resetSystemModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+            <div class="modal-header bg-danger text-white">
+                <div>
+                    <h5 class="modal-title mb-1" id="resetSystemModalLabel">Confirmar reset do sistema</h5>
+                    <small class="text-white-50">Ação irreversível</small>
+                </div>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
+            </div>
+
+            <form action="{{ route('admin.settings.reset') }}" method="POST">
+                @csrf
+                <div class="modal-body">
+                    <div class="alert alert-danger border-0 mb-3">
+                        Atenção: ao continuar, todos os participantes, depoimentos, PDFs gerados e imagens dos depoimentos serão apagados sem possibilidade de recuperação.
+                    </div>
+
+                    <label for="systemResetConfirmation" class="form-label fw-semibold">Digite RESETAR para confirmar</label>
+                    <input
+                        type="text"
+                        name="confirmation"
+                        id="systemResetConfirmation"
+                        class="form-control form-control-lg @error('confirmation') is-invalid @enderror"
+                        placeholder="RESETAR"
+                        autocomplete="off"
+                        inputmode="text"
+                    >
+                    @error('confirmation')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+
+                    <div class="form-text mt-2">
+                        O botão de confirmação só será habilitado quando a palavra estiver exatamente correta.
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-danger" id="systemResetSubmit" disabled>Apagar tudo</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const modalEl = document.getElementById('resetSystemModal');
+    const input = document.getElementById('systemResetConfirmation');
+    const submit = document.getElementById('systemResetSubmit');
+
+    if (!input || !submit) {
+        return;
+    }
+
+    const sync = () => {
+        submit.disabled = input.value.trim() !== 'RESETAR';
+    };
+
+    input.addEventListener('input', sync);
+    sync();
+
+    if (modalEl) {
+        modalEl.addEventListener('hidden.bs.modal', () => {
+            input.value = '';
+            sync();
+        });
+    }
+
+    @if ($errors->has('confirmation'))
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+    @endif
+});
+</script>
+@endpush

@@ -3,9 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Participant;
+use App\Models\PdfBatch;
 use App\Models\Setting;
+use App\Models\Testimonial;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -51,6 +55,25 @@ class SettingController extends Controller
         return redirect()->route('admin.settings.index')->with('success', 'Configurações atualizadas com sucesso.');
     }
 
+    public function reset(Request $request): RedirectResponse
+    {
+        $request->validate([
+            'confirmation' => ['required', 'string', 'in:RESETAR'],
+        ]);
+
+        DB::transaction(function (): void {
+            Testimonial::query()->delete();
+            PdfBatch::query()->delete();
+            Participant::query()->delete();
+        });
+
+        $this->purgeResetArtifacts();
+
+        return redirect()
+            ->route('admin.settings.index')
+            ->with('success', 'Sistema resetado com sucesso. Participantes, depoimentos e arquivos gerados foram apagados.');
+    }
+
     private function allSettings(): array
     {
         $defaults = Setting::seededDefaults();
@@ -69,5 +92,14 @@ class SettingController extends Controller
             : null;
 
         return $settings;
+    }
+
+    private function purgeResetArtifacts(): void
+    {
+        Storage::disk('public')->deleteDirectory('testimonials');
+        Storage::disk('public')->deleteDirectory('pdf');
+        Storage::disk('public')->deleteDirectory('tmp');
+        Storage::disk('local')->deleteDirectory('pdf-temp');
+        Storage::disk('local')->deleteDirectory('pdf-emojis');
     }
 }
