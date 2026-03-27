@@ -31,7 +31,7 @@ class TestimonialSubmissionController extends Controller
     {
         $validated = $request->validate([
             'sender_name' => ['required', 'string', 'max:255'],
-            'phone' => ['nullable', 'string', 'max:25'],
+            'phone' => ['required', 'string', 'max:25'],
             'participant_id' => ['required', 'integer', Rule::exists('participants', 'id')->where('status', 'active')],
             'relationship' => ['required', 'string', Rule::in(config('vida.relationships'))],
             'relationship_other' => ['nullable', 'string', 'max:255', Rule::requiredIf(fn () => $request->input('relationship') === 'Outro')],

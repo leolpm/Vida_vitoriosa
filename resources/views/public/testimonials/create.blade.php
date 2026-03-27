@@ -143,13 +143,40 @@
     }
 
     .surprise-callout {
-        background: rgba(213, 162, 76, 0.12);
-        border: 1px solid rgba(213, 162, 76, 0.22);
-        color: #6a4a1f;
+        background: linear-gradient(135deg, rgba(192, 123, 47, 0.14), rgba(213, 162, 76, 0.20));
+        border: 1px solid rgba(192, 123, 47, 0.26);
+        color: #5f3f18;
         border-radius: 1rem;
-        padding: .9rem 1rem;
-        text-align: center;
-        font-weight: 600;
+        padding: 1rem 1.1rem;
+        box-shadow: 0 14px 30px rgba(88, 58, 18, 0.08);
+    }
+
+    .surprise-callout .surprise-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: .4rem;
+        padding: .25rem .7rem;
+        border-radius: 999px;
+        background: rgba(192, 123, 47, 0.16);
+        color: #8a4f12;
+        font-size: .76rem;
+        font-weight: 800;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        margin-bottom: .7rem;
+    }
+
+    .surprise-callout .surprise-title {
+        font-size: 1.02rem;
+        font-weight: 800;
+        line-height: 1.4;
+        margin-bottom: .35rem;
+    }
+
+    .surprise-callout .surprise-text {
+        font-size: .96rem;
+        line-height: 1.55;
+        color: #6a4a1f;
     }
 
     .iti {
@@ -210,7 +237,11 @@
             </div>
 
             <div class="surprise-callout mb-4">
-                Este depoimento é uma surpresa. Não conte ao participante que você escreveu esta mensagem.
+                <div class="surprise-badge">Atenção: surpresa</div>
+                <div class="surprise-title">Este depoimento é uma surpresa e não pode ser revelado ao participante.</div>
+                <div class="surprise-text">
+                    Não conte que você escreveu esta mensagem. Ela será entregue de forma especial e precisa permanecer em segredo.
+                </div>
             </div>
 
             <form action="{{ route('testimonials.store') }}" method="POST" enctype="multipart/form-data" class="row g-3">
@@ -223,8 +254,8 @@
                 </div>
 
                 <div class="col-12 col-md-6">
-                    <label for="phone" class="field-label">Telefone</label>
-                    <input type="tel" name="phone" id="phone" class="form-control form-control-lg @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="(00) 00000-0000" inputmode="tel" autocomplete="tel">
+                    <label for="phone" class="field-label">Telefone <span class="text-danger">*</span></label>
+                    <input type="tel" name="phone" id="phone" class="form-control form-control-lg @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="(00) 00000-0000" inputmode="tel" autocomplete="tel" required>
                     @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
 

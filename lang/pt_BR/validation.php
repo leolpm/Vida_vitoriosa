@@ -119,6 +119,9 @@ return [
         'email' => [
             'email' => 'Informe um e-mail válido.',
         ],
+        'phone' => [
+            'required' => 'Informe um telefone válido.',
+        ],
     ],
 
     'attributes' => [
@@ -133,6 +136,7 @@ return [
         'message' => 'depoimento',
         'photo' => 'foto',
         'email' => 'e-mail',
+        'phone' => 'telefone',
         'code' => 'código de acesso',
         'retreat_name' => 'nome do retiro',
         'retreat_location' => 'local do retiro',
