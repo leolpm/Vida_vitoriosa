@@ -234,7 +234,7 @@
                         <option value="">Selecione o participante...</option>
                         @foreach ($participants as $participant)
                             <option value="{{ $participant->id }}" @selected(old('participant_id') == $participant->id)>
-                                {{ $participant->label }} @if ($participant->retreat_edition) - {{ $participant->retreat_edition }} @endif
+                                {{ $participant->label }}
                             </option>
                         @endforeach
                     </select>
