@@ -35,6 +35,10 @@ class PdfController extends Controller
             $participantsQuery->whereHas('testimonials', fn ($query) => $query->where('is_pdf_generated', false));
         }
 
+        if ($participantsFilter === 'approved_pending') {
+            $participantsQuery->whereHas('testimonials', fn ($query) => $query->where('status', 'approved')->where('is_pdf_generated', false));
+        }
+
         if ($participantName !== '') {
             $participantsQuery->where(function ($query) use ($participantName) {
                 $query->where('name', 'like', '%' . $participantName . '%')

@@ -14,6 +14,7 @@
                     <select name="participants_filter" id="participants_filter" class="form-select">
                         <option value="all" @selected(request('participants_filter', 'all') === 'all')>Todos os participantes</option>
                         <option value="pending" @selected(request('participants_filter') === 'pending')>Com depoimentos pendentes</option>
+                        <option value="approved_pending" @selected(request('participants_filter') === 'approved_pending')>Aprovados sem PDF</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-4">
@@ -29,7 +30,7 @@
                 </div>
                 <div class="col-12 col-md-4 col-xl-4">
                     <div class="small text-secondary mb-2">
-                        Use este filtro para priorizar quem ainda tem depoimentos a serem incluídos no PDF.
+                        Use este filtro para priorizar quem ainda tem depoimentos pendentes ou quem já tem depoimentos aprovados, mas ainda não recebeu PDF.
                     </div>
                     <button class="btn btn-outline-dark w-100" type="submit">Filtrar</button>
                 </div>
