@@ -123,26 +123,26 @@
         }
 
         .message-cell {
-            width: 64%;
+            width: 60%;
             vertical-align: top;
             padding-right: 10px;
         }
 
         .photo-cell {
-            width: 36%;
+            width: 40%;
             vertical-align: top;
-            padding-left: 5mm;
-            padding-right: 7mm;
+            padding-left: 6mm;
+            padding-right: 4mm;
             box-sizing: border-box;
         }
 
         .photo-column {
-            padding-top: 18mm;
+            padding-top: 34mm;
         }
 
         .photo-frame {
             width: 100%;
-            height: 216px;
+            height: 260px;
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid #e5cfab;
@@ -167,7 +167,7 @@
 
         .photo-placeholder {
             width: 100%;
-            height: 216px;
+            height: 260px;
             border-radius: 14px;
             border: 1px dashed #d8bf93;
             color: #9a8a76;
