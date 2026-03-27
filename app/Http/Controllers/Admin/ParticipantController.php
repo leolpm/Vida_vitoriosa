@@ -16,8 +16,20 @@ class ParticipantController extends Controller
 {
     public function index(): View
     {
+        $participantName = request()->string('participant_name')->toString();
+
+        $participantsQuery = Participant::query()->orderBy('name');
+
+        if ($participantName !== '') {
+            $participantsQuery->where(function ($query) use ($participantName) {
+                $query->where('name', 'like', '%' . $participantName . '%')
+                    ->orWhere('display_name', 'like', '%' . $participantName . '%');
+            });
+        }
+
         return view('admin.participants.index', [
-            'participants' => Participant::orderBy('name')->paginate(10),
+            'participants' => $participantsQuery->paginate(10)->withQueryString(),
+            'participantName' => $participantName,
         ]);
     }
 

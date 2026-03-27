@@ -40,6 +40,29 @@
         </div>
     @endif
 
+    <form method="GET" class="row g-3 align-items-end mb-4">
+        <div class="col-12 col-md-6 col-xl-4">
+            <label class="form-label fw-semibold" for="participant_name">Filtrar por nome</label>
+            <input
+                type="text"
+                name="participant_name"
+                id="participant_name"
+                class="form-control"
+                value="{{ $participantName ?? request('participant_name') }}"
+                placeholder="Digite o nome do participante"
+            >
+        </div>
+        <div class="col-12 col-md-auto">
+            <button class="btn btn-outline-dark" type="submit">Filtrar</button>
+            @if (($participantName ?? request('participant_name')) !== '')
+                <a href="{{ route('admin.participants.index') }}" class="btn btn-outline-secondary ms-2">Limpar</a>
+            @endif
+        </div>
+        <div class="col-12">
+            <div class="small text-secondary">Use a busca para localizar rapidamente um participante pelo nome.</div>
+        </div>
+    </form>
+
     <div class="table-responsive">
         <table class="table align-middle">
             <thead>
