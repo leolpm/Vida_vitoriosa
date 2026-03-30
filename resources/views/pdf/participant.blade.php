@@ -37,7 +37,6 @@
         .page {
             position: relative;
             break-inside: auto;
-            page-break-after: always;
         }
 
         .header {
