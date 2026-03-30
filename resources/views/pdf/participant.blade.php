@@ -36,9 +36,8 @@
 
         .page {
             position: relative;
-            height: 273mm;
-            overflow: hidden;
-            break-inside: avoid;
+            break-inside: auto;
+            page-break-after: always;
         }
 
         .header {
@@ -50,15 +49,6 @@
             display: block;
             border-radius: 0;
             height: auto;
-        }
-
-        .page.compact .header {
-            margin-bottom: 4px;
-        }
-
-        .page.compact .header img {
-            max-height: 48mm;
-            object-fit: cover;
         }
 
         .topline {
@@ -79,15 +69,6 @@
             color: #2f251d;
         }
 
-        .page.compact .participant-name {
-            font-size: 38px;
-            margin: 6px 0 2px;
-        }
-
-        .page.compact.compact-2 .participant-name {
-            font-size: 34px;
-        }
-
         .meta-line {
             display: flex;
             justify-content: center;
@@ -99,12 +80,6 @@
             text-transform: uppercase;
             margin-bottom: 10px;
             flex-wrap: wrap;
-        }
-
-        .page.compact .meta-line {
-            margin-bottom: 8px;
-            gap: 8px;
-            font-size: 11px;
         }
 
         .meta-line .relationship-label {
@@ -128,59 +103,26 @@
             background: #d2b58b;
         }
 
-        .page.compact .rule {
-            margin: 6px auto 8px;
-        }
-
-        .content-table {
-            width: 100%;
-            border-collapse: collapse;
+        .testimonial-body {
             margin-top: 8px;
         }
 
-        .message-column {
-            font-size: 12.5px;
-            line-height: 1.85;
-            color: #2f241b;
-            padding: 0 8mm 0 7mm;
+        .testimonial-body::after {
+            content: '';
+            display: block;
+            clear: both;
+        }
+
+        .testimonial-photo {
+            float: right;
+            width: 45%;
+            max-width: 82mm;
+            margin: 10mm 0 8mm 10mm;
             box-sizing: border-box;
-        }
-
-        .page.compact .message-column {
-            font-size: 11.2px;
-            line-height: 1.62;
-            padding: 0 7mm 0 6mm;
-        }
-
-        .message-column p {
-            margin: 0 0 10px;
-        }
-
-        .message-cell {
-            width: 54%;
-            vertical-align: top;
-            padding-right: 10px;
-        }
-
-        .photo-cell {
-            width: 46%;
-            vertical-align: top;
-            padding-left: 6mm;
-            padding-right: 4mm;
-            box-sizing: border-box;
-        }
-
-        .photo-column {
-            padding-top: 60mm;
-        }
-
-        .page.compact .photo-column {
-            padding-top: 36mm;
         }
 
         .photo-frame {
             width: 100%;
-            height: 320px;
             border-radius: 14px;
             overflow: hidden;
             border: 1px solid #e5cfab;
@@ -188,29 +130,17 @@
             text-align: center;
         }
 
-        .page.compact .photo-frame,
-        .page.compact .photo-placeholder {
-            height: 280px;
-        }
-
         .photo-frame img {
-            max-width: 100%;
-            max-height: 100%;
-            width: auto;
+            width: 100%;
             height: auto;
+            max-height: 110mm;
+            object-fit: contain;
             display: block;
-            margin: 0 auto;
-        }
-
-        .emoji-inline {
-            width: 1.05em;
-            height: 1.05em;
-            vertical-align: -0.16em;
         }
 
         .photo-placeholder {
             width: 100%;
-            height: 320px;
+            min-height: 92mm;
             border-radius: 14px;
             border: 1px dashed #d8bf93;
             color: #9a8a76;
@@ -221,10 +151,28 @@
             padding: 16px;
             box-sizing: border-box;
             font-size: 11px;
+            background: #fff;
+        }
+
+        .testimonial-message {
+            font-size: 12.5px;
+            line-height: 1.85;
+            color: #2f241b;
+            padding: 0 7mm 0 7mm;
+            box-sizing: border-box;
+        }
+
+        .testimonial-message p {
+            margin: 0 0 10px;
+        }
+
+        .emoji-inline {
+            width: 1.05em;
+            height: 1.05em;
+            vertical-align: -0.16em;
         }
 
         .page-content {
-            min-height: 100%;
             padding-bottom: 20mm;
             box-sizing: border-box;
         }
@@ -244,12 +192,6 @@
             text-align: center;
         }
 
-        .page-number {
-            position: absolute;
-            right: 0;
-            top: 8px;
-            color: #7e7467;
-        }
     </style>
 </head>
 <body>
@@ -259,13 +201,8 @@
         $relationshipLabel = $testimonial->relationship === 'Outro'
             ? ($testimonial->relationship_other ?: 'Outro')
             : $testimonial->relationship;
-        $participantNameLength = mb_strlen($participant->label);
-        $messageLength = mb_strlen($testimonial->message);
-        $compactLevel = $messageLength > 1200 || $participantNameLength > 32
-            ? 2
-            : ($messageLength > 700 || $participantNameLength > 24 ? 1 : 0);
     @endphp
-    <section class="page{{ $compactLevel > 0 ? ' compact compact-' . $compactLevel : '' }}" style="{{ $loop->last ? '' : 'page-break-after: always;' }}">
+    <section class="page" style="{{ $loop->last ? '' : 'page-break-after: always;' }}">
         <div class="page-content">
             <div class="header">
                 @if ($headerImage && file_exists($headerImage))
@@ -284,31 +221,25 @@
                 <span class="sender-name">{{ $testimonial->sender_name }}</span>
             </div>
 
-            <table class="content-table">
-                <tr>
-                    <td class="message-cell">
-                        <div class="message-column">
-                            {!! $testimonial->pdf_message_html !!}
+            <div class="testimonial-body">
+                <div class="testimonial-photo">
+                    @if (($testimonial->pdf_photo_local_path ?? $photoPath) && file_exists($testimonial->pdf_photo_local_path ?? $photoPath))
+                        <div class="photo-frame">
+                            <img src="{{ $testimonial->pdf_photo_local_path ?? $photoPath }}" alt="Foto do depoimento">
                         </div>
-                    </td>
-                    <td class="photo-cell">
-                        <div class="photo-column">
-                            @if (($testimonial->pdf_photo_local_path ?? $photoPath) && file_exists($testimonial->pdf_photo_local_path ?? $photoPath))
-                                <div class="photo-frame">
-                                    <img src="{{ $testimonial->pdf_photo_local_path ?? $photoPath }}" alt="Foto do depoimento">
-                                </div>
-                            @else
-                                <div class="photo-placeholder">Espaço reservado para a foto do depoimento</div>
-                            @endif
-                        </div>
-                    </td>
-                </tr>
-            </table>
+                    @else
+                        <div class="photo-placeholder">Espaço reservado para a foto do depoimento</div>
+                    @endif
+                </div>
+
+                <div class="testimonial-message">
+                    {!! $testimonial->pdf_message_html !!}
+                </div>
+            </div>
         </div>
 
         <div class="footer">
             <div>{{ $footerText }}</div>
-            <div class="page-number">{{ $loop->iteration }}</div>
         </div>
     </section>
 @endforeach
