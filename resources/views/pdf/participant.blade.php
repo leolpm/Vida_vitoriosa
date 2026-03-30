@@ -52,6 +52,15 @@
             height: auto;
         }
 
+        .page.compact .header {
+            margin-bottom: 4px;
+        }
+
+        .page.compact .header img {
+            max-height: 48mm;
+            object-fit: cover;
+        }
+
         .topline {
             font-size: 8.5px;
             letter-spacing: .30em;
@@ -70,6 +79,15 @@
             color: #2f251d;
         }
 
+        .page.compact .participant-name {
+            font-size: 38px;
+            margin: 6px 0 2px;
+        }
+
+        .page.compact.compact-2 .participant-name {
+            font-size: 34px;
+        }
+
         .meta-line {
             display: flex;
             justify-content: center;
@@ -81,6 +99,12 @@
             text-transform: uppercase;
             margin-bottom: 10px;
             flex-wrap: wrap;
+        }
+
+        .page.compact .meta-line {
+            margin-bottom: 8px;
+            gap: 8px;
+            font-size: 11px;
         }
 
         .meta-line .relationship-label {
@@ -104,6 +128,10 @@
             background: #d2b58b;
         }
 
+        .page.compact .rule {
+            margin: 6px auto 8px;
+        }
+
         .content-table {
             width: 100%;
             border-collapse: collapse;
@@ -116,6 +144,12 @@
             color: #2f241b;
             padding: 0 8mm 0 7mm;
             box-sizing: border-box;
+        }
+
+        .page.compact .message-column {
+            font-size: 11.2px;
+            line-height: 1.62;
+            padding: 0 7mm 0 6mm;
         }
 
         .message-column p {
@@ -140,6 +174,10 @@
             padding-top: 60mm;
         }
 
+        .page.compact .photo-column {
+            padding-top: 36mm;
+        }
+
         .photo-frame {
             width: 100%;
             height: 320px;
@@ -148,6 +186,11 @@
             border: 1px solid #e5cfab;
             background: #fff;
             text-align: center;
+        }
+
+        .page.compact .photo-frame,
+        .page.compact .photo-placeholder {
+            height: 280px;
         }
 
         .photo-frame img {
@@ -216,8 +259,13 @@
         $relationshipLabel = $testimonial->relationship === 'Outro'
             ? ($testimonial->relationship_other ?: 'Outro')
             : $testimonial->relationship;
+        $participantNameLength = mb_strlen($participant->label);
+        $messageLength = mb_strlen($testimonial->message);
+        $compactLevel = $messageLength > 1200 || $participantNameLength > 32
+            ? 2
+            : ($messageLength > 700 || $participantNameLength > 24 ? 1 : 0);
     @endphp
-    <section class="page" style="{{ $loop->last ? '' : 'page-break-after: always;' }}">
+    <section class="page{{ $compactLevel > 0 ? ' compact compact-' . $compactLevel : '' }}" style="{{ $loop->last ? '' : 'page-break-after: always;' }}">
         <div class="page-content">
             <div class="header">
                 @if ($headerImage && file_exists($headerImage))
