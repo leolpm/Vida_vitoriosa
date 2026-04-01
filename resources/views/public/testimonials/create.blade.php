@@ -7,7 +7,6 @@
 
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/css/intlTelInput.css">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
 <style>
     .form-stage {
         max-width: 860px;
@@ -182,35 +181,6 @@
     .iti {
         width: 100%;
     }
-
-    .choices {
-        margin-bottom: 0;
-        font-size: 1rem;
-    }
-
-    .choices__inner {
-        min-height: calc(3.5rem + 2px);
-        padding: .85rem 1rem;
-        background: rgba(255,255,255,0.72);
-        border-color: rgba(82, 65, 48, 0.18);
-        border-radius: .8rem;
-    }
-
-    .choices__list--dropdown,
-    .choices__list[aria-expanded] {
-        border-color: rgba(82, 65, 48, 0.18);
-        border-radius: .8rem;
-        box-shadow: 0 18px 42px rgba(33, 29, 24, 0.16);
-    }
-
-    .choices__list--dropdown .choices__item--selectable.is-highlighted {
-        background: #d9822f;
-    }
-
-    .choices__placeholder {
-        opacity: 1;
-        color: #6f6458;
-    }
 </style>
 @endpush
 
@@ -261,6 +231,13 @@
 
                 <div class="col-12 col-md-6">
                     <label for="participant_id" class="field-label">Para qual participante <span class="text-danger">*</span></label>
+                    <input
+                        type="text"
+                        id="participant_search"
+                        class="form-control form-control-lg mb-2"
+                        placeholder="Digite o nome para filtrar a lista"
+                        autocomplete="off"
+                    >
                     <select name="participant_id" id="participant_id" class="form-select form-select-lg @error('participant_id') is-invalid @enderror">
                         <option value="">Selecione o participante...</option>
                         @foreach ($participants as $participant)
@@ -320,9 +297,10 @@
         const wrapper = document.getElementById('relationship-other-wrapper');
         const phoneInput = document.getElementById('phone');
         const participantSelect = document.getElementById('participant_id');
+        const participantSearch = document.getElementById('participant_search');
         const form = document.querySelector('form[action="{{ route('testimonials.store') }}"]');
         let iti = null;
-        let participantChoices = null;
+        let participantOptions = [];
 
         const toggle = () => {
             wrapper.style.display = relationship.value === 'Outro' ? '' : 'none';
@@ -354,22 +332,63 @@
             });
         }
 
-        if (participantSelect && window.Choices) {
-            participantChoices = new window.Choices(participantSelect, {
-                searchEnabled: true,
-                searchPlaceholderValue: 'Digite para filtrar',
-                itemSelectText: '',
-                shouldSort: false,
-                placeholder: true,
-                placeholderValue: 'Selecione o participante...',
-                searchResultLimit: 50,
-                position: 'bottom',
-            });
+        if (participantSelect && participantSearch) {
+            participantOptions = Array.from(participantSelect.options).map((option) => ({
+                value: option.value,
+                label: option.textContent.trim(),
+                disabled: option.disabled,
+                placeholder: option.value === '',
+            }));
 
-            participantSelect.addEventListener('showDropdown', () => {
-                const searchInput = participantSelect.closest('.choices')?.querySelector('.choices__input');
-                searchInput?.focus();
-            });
+            const renderParticipantOptions = () => {
+                const term = participantSearch.value.trim().toLowerCase();
+                const selectedValue = participantSelect.value;
+                const filtered = participantOptions.filter((option) => {
+                    if (option.placeholder) {
+                        return true;
+                    }
+
+                    if (!term) {
+                        return true;
+                    }
+
+                    return option.label.toLowerCase().includes(term);
+                });
+                const selectedOption = participantOptions.find((option) => option.value === selectedValue);
+                const visibleOptions = [...filtered];
+
+                if (selectedOption && selectedOption.value !== '' && !visibleOptions.some((option) => option.value === selectedOption.value)) {
+                    visibleOptions.splice(1, 0, selectedOption);
+                }
+
+                participantSelect.innerHTML = '';
+
+                if (visibleOptions.length === 1) {
+                    const noMatchOption = document.createElement('option');
+                    noMatchOption.value = '';
+                    noMatchOption.textContent = 'Nenhum participante encontrado';
+                    noMatchOption.disabled = true;
+                    noMatchOption.selected = true;
+                    participantSelect.appendChild(noMatchOption);
+                    return;
+                }
+
+                visibleOptions.forEach((option) => {
+                    const el = document.createElement('option');
+                    el.value = option.value;
+                    el.textContent = option.label;
+                    el.disabled = option.disabled;
+                    el.selected = option.value !== '' && option.value === selectedValue;
+                    participantSelect.appendChild(el);
+                });
+
+                if (selectedValue) {
+                    participantSelect.value = selectedValue;
+                }
+            };
+
+            participantSearch.addEventListener('input', renderParticipantOptions);
+            renderParticipantOptions();
         }
 
         relationship?.addEventListener('change', toggle);
