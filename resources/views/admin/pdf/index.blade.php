@@ -13,8 +13,10 @@
                     <label class="form-label fw-semibold" for="participants_filter">Filtro de participantes</label>
                     <select name="participants_filter" id="participants_filter" class="form-select">
                         <option value="all" @selected(request('participants_filter', 'all') === 'all')>Todos os participantes</option>
-                        <option value="pending" @selected(request('participants_filter') === 'pending')>Com depoimentos pendentes</option>
                         <option value="approved_pending" @selected(request('participants_filter') === 'approved_pending')>Aprovados sem PDF</option>
+                        <option value="approved" @selected(request('participants_filter') === 'approved')>Com depoimentos aprovados</option>
+                        <option value="pending" @selected(request('participants_filter') === 'pending')>Com depoimentos pendentes</option>
+                        <option value="without_testimonials" @selected(request('participants_filter') === 'without_testimonials')>Sem depoimentos</option>
                     </select>
                 </div>
                 <div class="col-12 col-md-4">
@@ -30,7 +32,7 @@
                 </div>
                 <div class="col-12 col-md-4 col-xl-4">
                     <div class="small text-secondary mb-2">
-                        Use este filtro para priorizar quem ainda tem depoimentos pendentes ou quem já tem depoimentos aprovados, mas ainda não recebeu PDF.
+                        Use os filtros para priorizar participantes com depoimentos aprovados sem PDF, apenas aprovados, apenas pendentes ou sem depoimentos.
                     </div>
                     <button class="btn btn-outline-dark w-100" type="submit">Filtrar</button>
                 </div>
@@ -49,10 +51,19 @@
                         <div class="border rounded-4 p-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                             <div>
                                 <div class="fw-semibold">{{ $participant->label }}</div>
-                                <div class="small text-secondary">
-                                    Total: {{ $participant->testimonials_count }} |
-                                    Aprovados: {{ $participant->approved_testimonials_count }} |
-                                    Pendentes: {{ $participant->pending_testimonials_count }}
+                                <div class="d-flex flex-wrap gap-2 mt-2">
+                                    <span class="badge rounded-pill text-bg-light border text-dark" data-bs-toggle="tooltip" data-bs-title="Total de depoimentos cadastrados para este participante.">
+                                        Total: {{ $participant->testimonials_count }}
+                                    </span>
+                                    <span class="badge rounded-pill text-bg-success" data-bs-toggle="tooltip" data-bs-title="Depoimentos com status Aprovado.">
+                                        Aprovados: {{ $participant->approved_testimonials_count }}
+                                    </span>
+                                    <span class="badge rounded-pill text-bg-warning text-dark" data-bs-toggle="tooltip" data-bs-title="Depoimentos com status Aprovado que ainda não foram gerados em PDF.">
+                                        Aprovados sem PDF: {{ $participant->approved_pending_testimonials_count }}
+                                    </span>
+                                    <span class="badge rounded-pill text-bg-secondary" data-bs-toggle="tooltip" data-bs-title="Depoimentos que não estão aprovados, como recebidos, revisados ou arquivados.">
+                                        Pendentes: {{ $participant->pending_testimonials_count }}
+                                    </span>
                                 </div>
                             </div>
                             <div class="d-flex flex-wrap gap-2 justify-content-md-end">
@@ -130,3 +141,12 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const tooltipTriggers = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    tooltipTriggers.forEach((trigger) => new bootstrap.Tooltip(trigger));
+});
+</script>
+@endpush

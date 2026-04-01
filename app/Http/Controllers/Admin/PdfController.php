@@ -27,16 +27,24 @@ class PdfController extends Controller
         $participantsQuery = Participant::query()->withCount([
             'testimonials',
             'testimonials as approved_testimonials_count' => fn ($query) => $query->where('status', 'approved'),
-            'testimonials as pending_testimonials_count' => fn ($query) => $query->where('is_pdf_generated', false),
             'testimonials as approved_pending_testimonials_count' => fn ($query) => $query->where('status', 'approved')->where('is_pdf_generated', false),
+            'testimonials as pending_testimonials_count' => fn ($query) => $query->where('status', '!=', 'approved'),
         ]);
-
-        if ($participantsFilter === 'pending') {
-            $participantsQuery->whereHas('testimonials', fn ($query) => $query->where('is_pdf_generated', false));
-        }
 
         if ($participantsFilter === 'approved_pending') {
             $participantsQuery->whereHas('testimonials', fn ($query) => $query->where('status', 'approved')->where('is_pdf_generated', false));
+        }
+
+        if ($participantsFilter === 'approved') {
+            $participantsQuery->whereHas('testimonials', fn ($query) => $query->where('status', 'approved'));
+        }
+
+        if ($participantsFilter === 'pending') {
+            $participantsQuery->whereHas('testimonials', fn ($query) => $query->where('status', '!=', 'approved'));
+        }
+
+        if ($participantsFilter === 'without_testimonials') {
+            $participantsQuery->whereDoesntHave('testimonials');
         }
 
         if ($participantName !== '') {
