@@ -5,70 +5,119 @@
 @section('page-title', 'Dashboard')
 
 @section('content')
-<div class="row g-3 mb-4">
-    <div class="col-12 col-md-6 col-xl-2">
-        <div class="stat-card p-3 h-100">
-            <div class="d-flex align-items-center justify-content-between">
+<div class="row g-4 mb-4">
+    <div class="col-12 col-xl-6">
+        <div class="card-surface p-4 h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <div class="text-secondary small">Participantes</div>
-                    <div class="fs-3 fw-bold">{{ $participantsCount }}</div>
+                    <div class="section-eyebrow text-secondary mb-1">Panorama</div>
+                    <h2 class="h5 mb-1">Métricas operacionais</h2>
+                    <p class="text-secondary mb-0">Indicadores gerais do retiro, cadastro e acesso ao painel.</p>
                 </div>
-                <div class="stat-icon"><i class="bi bi-people"></i></div>
+            </div>
+            <div class="row row-cols-1 row-cols-md-2 g-3">
+                <div class="col">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Total de participantes cadastrados no sistema.">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-secondary small">Participantes</div>
+                                <div class="fs-3 fw-bold">{{ $participantsCount }}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-people"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Participantes com status ativo.">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-secondary small">Ativos</div>
+                                <div class="fs-3 fw-bold">{{ $activeParticipantsCount }}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-person-check"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Total de depoimentos cadastrados no sistema.">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-secondary small">Depoimentos</div>
+                                <div class="fs-3 fw-bold">{{ $testimonialsCount }}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-chat-square-heart"></i></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Quantidade de usuários administrativos ativos com acesso ao painel.">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-secondary small">Usuários</div>
+                                <div class="fs-3 fw-bold">{{ $usersCount }}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-person-badge"></i></div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-6 col-xl-2">
-        <div class="stat-card p-3 h-100">
-            <div class="d-flex align-items-center justify-content-between">
+
+    <div class="col-12 col-xl-6">
+        <div class="card-surface p-4 h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
                 <div>
-                    <div class="text-secondary small">Ativos</div>
-                    <div class="fs-3 fw-bold">{{ $activeParticipantsCount }}</div>
+                    <div class="section-eyebrow text-secondary mb-1">Exportação</div>
+                    <h2 class="h5 mb-1">Métricas de PDFs</h2>
+                    <p class="text-secondary mb-0">Indicadores do fluxo de aprovação e geração de arquivos PDF.</p>
                 </div>
-                <div class="stat-icon"><i class="bi bi-person-check"></i></div>
             </div>
-        </div>
-    </div>
-    <div class="col-12 col-md-6 col-xl-2">
-        <div class="stat-card p-3 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <div class="text-secondary small">Depoimentos</div>
-                    <div class="fs-3 fw-bold">{{ $testimonialsCount }}</div>
+            <div class="row row-cols-1 row-cols-md-2 g-3">
+                <div class="col">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Depoimentos com status Aprovado, independentemente de já terem PDF.">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-secondary small">Aprovados</div>
+                                <div class="fs-3 fw-bold">{{ $approvedTestimonialsCount }}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-check2-circle"></i></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-icon"><i class="bi bi-chat-square-heart"></i></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-md-6 col-xl-2">
-        <div class="stat-card p-3 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <div class="text-secondary small">Pendentes</div>
-                    <div class="fs-3 fw-bold">{{ $pendingTestimonialsCount }}</div>
+                <div class="col">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Depoimentos aprovados que ainda não foram exportados em PDF.">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-secondary small">Aprovados sem PDF</div>
+                                <div class="fs-3 fw-bold">{{ $approvedWithoutPdfTestimonialsCount }}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-file-earmark-excel"></i></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-md-6 col-xl-2">
-        <div class="stat-card p-3 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <div class="text-secondary small">Usuários</div>
-                    <div class="fs-3 fw-bold">{{ $usersCount }}</div>
+                <div class="col">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Depoimentos que ainda não estão aprovados, como recebidos, revisados ou arquivados.">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-secondary small">Pendentes</div>
+                                <div class="fs-3 fw-bold">{{ $pendingTestimonialsCount }}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-hourglass-split"></i></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-icon"><i class="bi bi-person-badge"></i></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-12 col-md-6 col-xl-2">
-        <div class="stat-card p-3 h-100">
-            <div class="d-flex align-items-center justify-content-between">
-                <div>
-                    <div class="text-secondary small">Lotes PDF</div>
-                    <div class="fs-3 fw-bold">{{ $pdfBatchesCount }}</div>
+                <div class="col">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Total de lotes de PDF já gerados no sistema.">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <div class="text-secondary small">Lotes PDF</div>
+                                <div class="fs-3 fw-bold">{{ $pdfBatchesCount }}</div>
+                            </div>
+                            <div class="stat-icon"><i class="bi bi-file-earmark-pdf"></i></div>
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-icon"><i class="bi bi-file-earmark-pdf"></i></div>
             </div>
         </div>
     </div>
@@ -161,3 +210,13 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-bs-toggle="tooltip"]').forEach((element) => {
+        new bootstrap.Tooltip(element);
+    });
+});
+</script>
+@endpush

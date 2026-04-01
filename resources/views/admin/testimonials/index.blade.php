@@ -5,6 +5,40 @@
 @section('page-title', 'Depoimentos')
 
 @section('content')
+@push('styles')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
+<style>
+    .choices {
+        margin-bottom: 0;
+        font-size: 1rem;
+    }
+
+    .choices__inner {
+        min-height: calc(2.75rem + 2px);
+        padding: .55rem .85rem;
+        background: rgba(255,255,255,0.82);
+        border: 1px solid rgba(16, 27, 39, 0.16);
+        border-radius: .8rem;
+    }
+
+    .choices__list--dropdown,
+    .choices__list[aria-expanded] {
+        border-color: rgba(16, 27, 39, 0.16);
+        border-radius: .8rem;
+        box-shadow: 0 18px 42px rgba(16, 27, 39, 0.16);
+    }
+
+    .choices__list--dropdown .choices__item--selectable.is-highlighted {
+        background: #c58f3a;
+    }
+
+    .choices__placeholder {
+        opacity: 1;
+        color: #6f6458;
+    }
+</style>
+@endpush
+
 <div class="card-surface p-4 mb-4">
     <form method="GET" class="row g-3 align-items-end">
         <div class="col-12 col-md-4">
@@ -82,3 +116,32 @@
     {{ $testimonials->links() }}
 </div>
 @endsection
+
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const participantSelect = document.getElementById('participant_id');
+
+    if (!participantSelect || !window.Choices) {
+        return;
+    }
+
+    const choices = new window.Choices(participantSelect, {
+        searchEnabled: true,
+        searchPlaceholderValue: 'Digite o nome do participante',
+        itemSelectText: '',
+        shouldSort: false,
+        placeholder: true,
+        placeholderValue: 'Todos',
+        searchResultLimit: 50,
+        position: 'bottom',
+    });
+
+    participantSelect.addEventListener('showDropdown', () => {
+        const searchInput = participantSelect.closest('.choices')?.querySelector('.choices__input');
+        searchInput?.focus();
+    });
+});
+</script>
+@endpush
