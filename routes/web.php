@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\PdfController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ParticipantController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\TestimonialController;
@@ -45,6 +46,14 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/testimonials/{testimonial}', [TestimonialController::class, 'show'])->name('testimonials.show');
         Route::patch('/testimonials/{testimonial}', [TestimonialController::class, 'update'])->name('testimonials.update');
         Route::get('/testimonials/{testimonial}/photo', [TestimonialController::class, 'downloadPhoto'])->name('testimonials.photo');
+
+        Route::get('/reports', [ReportController::class, 'participants'])->name('reports.index');
+        Route::get('/reports/participants', [ReportController::class, 'participants'])->name('reports.participants');
+        Route::get('/reports/participants/print', [ReportController::class, 'participantsPrint'])->name('reports.participants.print');
+        Route::get('/reports/participants/excel', [ReportController::class, 'participantsExcel'])->name('reports.participants.excel');
+        Route::get('/reports/testimonials', [ReportController::class, 'testimonials'])->name('reports.testimonials');
+        Route::get('/reports/testimonials/print', [ReportController::class, 'testimonialsPrint'])->name('reports.testimonials.print');
+        Route::get('/reports/testimonials/excel', [ReportController::class, 'testimonialsExcel'])->name('reports.testimonials.excel');
 
         Route::get('/pdf', [PdfController::class, 'index'])->name('pdf.index');
         Route::post('/pdf/participants/{participant}/generate', [PdfController::class, 'generate'])->name('pdf.generate');

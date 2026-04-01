@@ -16,6 +16,9 @@
     <a href="{{ route('admin.testimonials.index') }}" class="{{ request()->routeIs('admin.testimonials.*') ? 'active' : '' }}">
         <i class="bi bi-chat-square-heart"></i> Depoimentos
     </a>
+    <a href="{{ route('admin.reports.participants') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+        <i class="bi bi-graph-up"></i> Relatórios
+    </a>
     <a href="{{ route('admin.pdf.index') }}" class="{{ request()->routeIs('admin.pdf.*') ? 'active' : '' }}">
         <i class="bi bi-file-earmark-pdf"></i> PDFs
     </a>
