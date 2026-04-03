@@ -34,6 +34,21 @@
             @error('login_code_expires_minutes') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
+        <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold" for="testimonials_closes_at">Encerramento dos depoimentos</label>
+            <input
+                type="datetime-local"
+                name="testimonials_closes_at"
+                id="testimonials_closes_at"
+                class="form-control form-control-lg @error('testimonials_closes_at') is-invalid @enderror"
+                value="{{ old('testimonials_closes_at', $settings['testimonials_closes_at']) }}"
+            >
+            <div class="form-text">
+                Após este dia e horário, o formulário público será bloqueado automaticamente e mostrará uma mensagem amigável.
+            </div>
+            @error('testimonials_closes_at') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
         <div class="col-12">
             <label class="form-label fw-semibold" for="pdf_footer_text">Texto de rodapé</label>
             <input type="text" name="pdf_footer_text" id="pdf_footer_text" class="form-control form-control-lg @error('pdf_footer_text') is-invalid @enderror" value="{{ old('pdf_footer_text', $settings['pdf_footer_text']) }}">

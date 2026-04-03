@@ -149,6 +149,7 @@
         border-radius: 1rem;
         padding: 1rem 1.1rem;
         box-shadow: 0 14px 30px rgba(88, 58, 18, 0.08);
+        text-align: center;
     }
 
     .surprise-callout .surprise-badge {
@@ -236,76 +237,89 @@
                 </p>
             </div>
 
-            <div class="surprise-callout mb-4">
-                <div class="surprise-badge">Atenção: surpresa</div>
-                <div class="surprise-title">Este depoimento é uma surpresa e não pode ser revelado ao participante.</div>
-                <div class="surprise-text">
-                    Não conte que você escreveu esta mensagem. Ela será entregue de forma especial e precisa permanecer em segredo.
+            @if ($testimonialsClosed)
+                <div class="surprise-callout mb-4 border-danger-subtle">
+                    <div class="surprise-badge">Encerrado</div>
+                    <div class="surprise-title">O período para envio de depoimentos foi encerrado.</div>
+                    <div class="surprise-text">
+                        Agradecemos seu carinho e participação.
+                        @if ($testimonialsClosesAtLabel)
+                            <span class="d-block mt-2 fw-semibold">Encerramento definido para {{ $testimonialsClosesAtLabel }}.</span>
+                        @endif
+                    </div>
                 </div>
-            </div>
-
-            <form action="{{ route('testimonials.store') }}" method="POST" enctype="multipart/form-data" class="row g-3">
-                @csrf
-
-                <div class="col-12">
-                    <label for="sender_name" class="field-label">Seu nome <span class="text-danger">*</span></label>
-                    <input type="text" name="sender_name" id="sender_name" class="form-control form-control-lg @error('sender_name') is-invalid @enderror" value="{{ old('sender_name') }}" placeholder="Digite seu nome">
-                    @error('sender_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
-
-                <div class="col-12 col-md-6">
-                    <label for="phone" class="field-label">Telefone <span class="text-danger">*</span></label>
-                    <input type="tel" name="phone" id="phone" class="form-control form-control-lg @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="(00) 00000-0000" inputmode="tel" autocomplete="tel" required>
-                    @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+            @else
+                <div class="surprise-callout mb-4">
+                    <div class="surprise-badge">Atenção: surpresa</div>
+                    <div class="surprise-title">Este depoimento é uma surpresa e não pode ser revelado ao participante.</div>
+                    <div class="surprise-text">
+                        Não conte que você escreveu esta mensagem. Ela será entregue de forma especial e precisa permanecer em segredo.
+                    </div>
                 </div>
 
-                <div class="col-12 col-md-6">
-                    <label for="participant_id" class="field-label">Para qual participante <span class="text-danger">*</span></label>
-                    <select name="participant_id" id="participant_id" class="form-select form-select-lg @error('participant_id') is-invalid @enderror">
-                        <option value="">Selecione o participante...</option>
-                        @foreach ($participants as $participant)
-                            <option value="{{ $participant->id }}" @selected(old('participant_id') == $participant->id)>
-                                {{ $participant->label }}
-                            </option>
-                        @endforeach
-                    </select>
-                    @error('participant_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
+                <form action="{{ route('testimonials.store') }}" method="POST" enctype="multipart/form-data" class="row g-3">
+                    @csrf
 
-                <div class="col-12 col-md-6">
-                    <label for="relationship" class="field-label">Relação <span class="text-danger">*</span></label>
-                    <select name="relationship" id="relationship" class="form-select form-select-lg @error('relationship') is-invalid @enderror">
-                        <option value="">Selecione...</option>
-                        @foreach ($relationships as $relationship)
-                            <option value="{{ $relationship }}" @selected(old('relationship') === $relationship)>{{ $relationship }}</option>
-                        @endforeach
-                    </select>
-                    @error('relationship') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
+                    <div class="col-12">
+                        <label for="sender_name" class="field-label">Seu nome <span class="text-danger">*</span></label>
+                        <input type="text" name="sender_name" id="sender_name" class="form-control form-control-lg @error('sender_name') is-invalid @enderror" value="{{ old('sender_name') }}" placeholder="Digite seu nome">
+                        @error('sender_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
-                <div class="col-12 col-md-6" id="relationship-other-wrapper" style="{{ old('relationship') === 'Outro' ? '' : 'display:none;' }}">
-                    <label for="relationship_other" class="field-label">Se for outro, informe</label>
-                    <input type="text" name="relationship_other" id="relationship_other" class="form-control form-control-lg @error('relationship_other') is-invalid @enderror" value="{{ old('relationship_other') }}" placeholder="Ex.: vizinho, mentor">
-                    @error('relationship_other') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
+                    <div class="col-12 col-md-6">
+                        <label for="phone" class="field-label">Telefone <span class="text-danger">*</span></label>
+                        <input type="tel" name="phone" id="phone" class="form-control form-control-lg @error('phone') is-invalid @enderror" value="{{ old('phone') }}" placeholder="(00) 00000-0000" inputmode="tel" autocomplete="tel" required>
+                        @error('phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
-                <div class="col-12">
-                    <label for="message" class="field-label">Depoimento <span class="text-danger">*</span></label>
-                    <textarea name="message" id="message" rows="6" class="form-control @error('message') is-invalid @enderror" placeholder="Escreva sua mensagem de carinho e encorajamento...">{{ old('message') }}</textarea>
-                    @error('message') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                </div>
+                    <div class="col-12 col-md-6">
+                        <label for="participant_id" class="field-label">Para qual participante <span class="text-danger">*</span></label>
+                        <select name="participant_id" id="participant_id" class="form-select form-select-lg @error('participant_id') is-invalid @enderror">
+                            <option value="">Selecione o participante...</option>
+                            @foreach ($participants as $participant)
+                                <option value="{{ $participant->id }}" @selected(old('participant_id') == $participant->id)>
+                                    {{ $participant->label }}
+                                </option>
+                            @endforeach
+                        </select>
+                        @error('participant_id') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
-                <div class="col-12">
-                    <label for="photo" class="field-label">Foto (opcional)</label>
-                    <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept=".jpg,.jpeg,.png,.webp,image/*">
-                    <div class="mini-hint mt-1">Max. 10MB</div>
-                    @error('photo') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                </div>
+                    <div class="col-12 col-md-6">
+                        <label for="relationship" class="field-label">Relação <span class="text-danger">*</span></label>
+                        <select name="relationship" id="relationship" class="form-select form-select-lg @error('relationship') is-invalid @enderror">
+                            <option value="">Selecione...</option>
+                            @foreach ($relationships as $relationship)
+                                <option value="{{ $relationship }}" @selected(old('relationship') === $relationship)>{{ $relationship }}</option>
+                            @endforeach
+                        </select>
+                        @error('relationship') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
 
-                <div class="col-12 text-center pt-2">
-                    <button type="submit" class="btn btn-submit btn-lg px-5">Enviar Depoimento</button>
-                </div>
-            </form>
+                    <div class="col-12 col-md-6" id="relationship-other-wrapper" style="{{ old('relationship') === 'Outro' ? '' : 'display:none;' }}">
+                        <label for="relationship_other" class="field-label">Se for outro, informe</label>
+                        <input type="text" name="relationship_other" id="relationship_other" class="form-control form-control-lg @error('relationship_other') is-invalid @enderror" value="{{ old('relationship_other') }}" placeholder="Ex.: vizinho, mentor">
+                        @error('relationship_other') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-12">
+                        <label for="message" class="field-label">Depoimento <span class="text-danger">*</span></label>
+                        <textarea name="message" id="message" rows="6" class="form-control @error('message') is-invalid @enderror" placeholder="Escreva sua mensagem de carinho e encorajamento...">{{ old('message') }}</textarea>
+                        @error('message') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-12">
+                        <label for="photo" class="field-label">Foto (opcional)</label>
+                        <input type="file" name="photo" id="photo" class="form-control @error('photo') is-invalid @enderror" accept=".jpg,.jpeg,.png,.webp,image/*">
+                        <div class="mini-hint mt-1">Max. 10MB</div>
+                        @error('photo') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
+                    </div>
+
+                    <div class="col-12 text-center pt-2">
+                        <button type="submit" class="btn btn-submit btn-lg px-5">Enviar Depoimento</button>
+                    </div>
+                </form>
+            @endif
         </div>
     </div>
 </div>

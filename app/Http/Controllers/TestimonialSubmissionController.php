@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Participant;
 use App\Models\Setting;
 use App\Models\Testimonial;
+use Illuminate\Support\Carbon;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
@@ -24,11 +24,25 @@ class TestimonialSubmissionController extends Controller
             $settings[$key] = Setting::valueFor($key, $value);
         }
 
-        return view('public.testimonials.create', compact('participants', 'publicImageUrl', 'settings'));
+        $closingAt = $this->testimonialClosingAt();
+
+        return view('public.testimonials.create', [
+            'participants' => $participants,
+            'publicImageUrl' => $publicImageUrl,
+            'settings' => $settings,
+            'testimonialsClosed' => $closingAt !== null && now()->greaterThanOrEqualTo($closingAt),
+            'testimonialsClosesAtLabel' => $closingAt?->format('d/m/Y \à\s H:i'),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
+        if ($this->testimonialSubmissionClosed()) {
+            return redirect()
+                ->route('testimonials.create')
+                ->with('error', 'O período para envio de depoimentos foi encerrado. Obrigado pelo carinho e pela participação.');
+        }
+
         $validated = $request->validate([
             'sender_name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:25'],
@@ -70,5 +84,27 @@ class TestimonialSubmissionController extends Controller
     public function success(): View
     {
         return view('public.testimonials.success');
+    }
+
+    private function testimonialSubmissionClosed(): bool
+    {
+        $closingAt = $this->testimonialClosingAt();
+
+        return $closingAt !== null && now()->greaterThanOrEqualTo($closingAt);
+    }
+
+    private function testimonialClosingAt(): ?Carbon
+    {
+        $value = Setting::valueFor('testimonials_closes_at');
+
+        if (! is_string($value) || trim($value) === '') {
+            return null;
+        }
+
+        try {
+            return Carbon::createFromFormat('Y-m-d\TH:i', $value, config('app.timezone'));
+        } catch (\Throwable) {
+            return null;
+        }
     }
 }

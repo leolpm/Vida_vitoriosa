@@ -36,6 +36,7 @@ class Setting extends Model
             'retreat_location' => 'Igreja Vida',
             'retreat_year' => '2026',
             'pdf_footer_text' => 'Vida Vitoriosa - Mensagens de carinho e fé',
+            'testimonials_closes_at' => '',
             'public_site_image_path' => 'settings/public-site-default.png',
             'pdf_header_image_path' => 'settings/pdf-header-default.png',
             'login_code_expires_minutes' => '15',

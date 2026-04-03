@@ -29,6 +29,7 @@ class SettingController extends Controller
             'retreat_location' => ['required', 'string', 'max:255'],
             'retreat_year' => ['required', 'string', 'max:20'],
             'pdf_footer_text' => ['nullable', 'string', 'max:255'],
+            'testimonials_closes_at' => ['nullable', 'date_format:Y-m-d\TH:i'],
             'login_code_expires_minutes' => ['required', 'integer', 'min:1', 'max:240'],
             'public_site_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'pdf_header_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
@@ -39,6 +40,7 @@ class SettingController extends Controller
             'retreat_location',
             'retreat_year',
             'pdf_footer_text',
+            'testimonials_closes_at',
             'login_code_expires_minutes',
         ] as $key) {
             Setting::put($key, $validated[$key] ?? '');
