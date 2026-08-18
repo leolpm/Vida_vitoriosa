@@ -40,7 +40,7 @@ v2.0.0
 | Versao | Estado | Escopo |
 |---|---|---|
 | `v1.0.0` | Estavel e congelada | Sistema atual do Vida Vitoriosa em modo monoevento |
-| `v2.0.0` | Implementada e validada na branch | Arquitetura multi-evento, subdominios e formulario EDD |
+| `v2.0.0` | Implantada; EDD aguarda DNS e SSL | Arquitetura multi-evento, subdominios e formulario EDD |
 | `v3.0.0` | Planejada | Fluxo de Impressao multi-evento |
 
 ## 3.1 Versao 1.0.0 - Vida Vitoriosa
@@ -94,11 +94,11 @@ Escopo:
 - arte EDD fornecida pelo usuario incorporada ao projeto
 - sessao compartilhada entre subdominios
 - reset limitado ao evento atual
-- migracao dos dados existentes para Vida Vitoriosa
+- classificacao dos 61 participantes existentes como dados do EDD
 - testes automatizados de isolamento
 - testes visuais nos dois dominios
 
-Tag prevista depois da validacao:
+Tag publicada depois da validacao:
 
 ```text
 v2.0.0
@@ -210,3 +210,4 @@ Nao devem ser feitas alteracoes diretamente enquanto o repositorio estiver em es
 |---|---|---|
 | 2026-08-18 | Criacao da politica de versoes com congelamento da v1.0.0, multi-evento na v2.0.0 e Fluxo de Impressao na v3.0.0 | Preservar a versao atual e evitar mistura entre implementacoes estruturais |
 | 2026-08-18 | Atualizacao da v2.0.0 para implementada e validada na branch | Diferenciar conclusao tecnica da criacao da tag de release |
+| 2026-08-18 | Registro da implantacao da v2.0.0 com ativacao EDD pendente | Separar deploy concluido do bloqueio externo de DNS e certificado |

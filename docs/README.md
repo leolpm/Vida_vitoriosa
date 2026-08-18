@@ -36,6 +36,11 @@ Este diretorio concentra planejamento, backlog, roadmap e documentos de decisao 
 
 - `docs/modulos/multi-eventos.md`: arquitetura por dominio, isolamento, EDD e operacao da v2.0.0
 
+### Implantacao
+
+- `docs/implantacao/README.md`: indice de registros de deploy
+- `docs/implantacao/v2.0.0-producao.md`: deploy da v2.0.0, preservacao dos dados e pendencia DNS/SSL do EDD
+
 ## Historico de alteracoes
 
 | Data | Alteracao | Motivo |
@@ -43,3 +48,4 @@ Este diretorio concentra planejamento, backlog, roadmap e documentos de decisao 
 | 2026-08-18 | Inclusao do indice de planejamentos ativos e referencias compartilhadas | Facilitar a navegacao e registrar o planejamento multi-evento como fonte ativa |
 | 2026-08-18 | Inclusao do planejamento de versoes | Preservar a v1.0.0 antes da implementacao multi-evento |
 | 2026-08-18 | Inclusao da documentacao canonica de multi-eventos | Registrar o comportamento efetivamente implementado na v2.0.0 |
+| 2026-08-18 | Inclusao do registro de implantacao da v2.0.0 | Documentar backup, contagens, realocacao dos participantes e pendencia externa do EDD |
