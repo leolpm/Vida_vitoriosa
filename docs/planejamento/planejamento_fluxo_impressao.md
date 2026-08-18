@@ -1,6 +1,6 @@
 # Planejamento do Sistema - Fluxo de Impressao Multi-evento
 
-> Status: ativo
+> Status: implementado localmente e em validacao para release
 > Tipo: planejamento funcional e arquitetural
 > Ordem de execucao: implementar depois da estrutura multi-evento por subdominio
 > Dependencia arquitetural: `docs/planejamento/planejamento_multi_eventos.md`
@@ -931,3 +931,4 @@ A arquitetura multi-evento e um pre-requisito. O Fluxo de Impressao deve ser con
 |---|---|---|
 | 2026-08-18 | Atualizacao integral do planejamento para arquitetura multi-evento por subdominio, com isolamento de dados, equipe compartilhada, links por evento, configuracoes, migracao e nova Fase 0 | Preparar o Fluxo de Impressao para funcionar no Vida Vitoriosa, EDD e eventos futuros sem retrabalho ou mistura de dados |
 | 2026-08-18 | Referencia ao planejamento multi-evento e substituicao do dominio unico pela entidade `event_domains` | Manter uma unica fonte para ambiente local, resolucao de dominios, migracao e testes multi-evento |
+| 2026-08-18 | Registro da implementacao local e referencia a documentacao canonica do modulo | Diferenciar codigo concluido localmente de homologacao, release e implantacao |

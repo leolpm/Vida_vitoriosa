@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Participant;
 use App\Models\PdfBatch;
+use App\Models\PrintFlow;
 use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Support\CurrentEvent;
@@ -12,14 +13,12 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\View\View;
 use Illuminate\Validation\Rule;
+use Illuminate\View\View;
 
 class SettingController extends Controller
 {
-    public function __construct(private readonly CurrentEvent $currentEvent)
-    {
-    }
+    public function __construct(private readonly CurrentEvent $currentEvent) {}
 
     public function index(): View
     {
@@ -43,6 +42,10 @@ class SettingController extends Controller
             'surprise_text' => ['required', 'string', 'max:1000'],
             'relationships_text' => ['required', 'string', 'max:2000'],
             'login_code_expires_minutes' => ['required', 'integer', 'min:1', 'max:240'],
+            'print_flow_global_task_limit' => ['required', 'integer', 'min:1', 'max:100'],
+            'print_flow_link_minutes' => ['required', 'integer', 'min:5', 'max:1440'],
+            'print_flow_access_limit' => ['required', 'integer', 'min:1', 'max:20'],
+            'print_flow_min_testimonials' => ['required', 'integer', 'min:1', 'max:100'],
             'public_site_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'pdf_header_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
         ]);
@@ -59,6 +62,10 @@ class SettingController extends Controller
             'surprise_title',
             'surprise_text',
             'login_code_expires_minutes',
+            'print_flow_global_task_limit',
+            'print_flow_link_minutes',
+            'print_flow_access_limit',
+            'print_flow_min_testimonials',
         ] as $key) {
             Setting::put($key, $validated[$key] ?? '');
         }
@@ -73,14 +80,14 @@ class SettingController extends Controller
 
         if ($request->hasFile('public_site_image')) {
             Setting::put('public_site_image_path', $request->file('public_site_image')->store(
-                'events/' . $this->currentEvent->get()->slug . '/settings',
+                'events/'.$this->currentEvent->get()->slug.'/settings',
                 'public'
             ));
         }
 
         if ($request->hasFile('pdf_header_image')) {
             Setting::put('pdf_header_image_path', $request->file('pdf_header_image')->store(
-                'events/' . $this->currentEvent->get()->slug . '/settings',
+                'events/'.$this->currentEvent->get()->slug.'/settings',
                 'public'
             ));
         }
@@ -90,13 +97,14 @@ class SettingController extends Controller
 
     public function reset(Request $request): RedirectResponse
     {
-        $confirmation = 'RESETAR ' . mb_strtoupper($this->currentEvent->get()->name, 'UTF-8');
+        $confirmation = 'RESETAR '.mb_strtoupper($this->currentEvent->get()->name, 'UTF-8');
 
         $request->validate([
             'confirmation' => ['required', 'string', Rule::in([$confirmation])],
         ]);
 
         DB::transaction(function (): void {
+            PrintFlow::query()->delete();
             Testimonial::query()->delete();
             PdfBatch::query()->delete();
             Participant::query()->delete();
@@ -106,7 +114,7 @@ class SettingController extends Controller
 
         return redirect()
             ->route('admin.settings.index')
-            ->with('success', 'Os dados do evento ' . $this->currentEvent->get()->name . ' foram apagados com sucesso.');
+            ->with('success', 'Os dados do evento '.$this->currentEvent->get()->name.' foram apagados com sucesso.');
     }
 
     private function allSettings(): array
@@ -119,11 +127,11 @@ class SettingController extends Controller
         }
 
         $settings['public_site_image_url'] = $settings['public_site_image_path']
-            ? '/storage/' . ltrim($settings['public_site_image_path'], '/')
+            ? '/storage/'.ltrim($settings['public_site_image_path'], '/')
             : null;
 
         $settings['pdf_header_image_url'] = $settings['pdf_header_image_path']
-            ? '/storage/' . ltrim($settings['pdf_header_image_path'], '/')
+            ? '/storage/'.ltrim($settings['pdf_header_image_path'], '/')
             : null;
 
         if ($this->currentEvent->get()->slug === 'edd') {
@@ -137,15 +145,15 @@ class SettingController extends Controller
         }
 
         $settings['relationships_text'] = implode(PHP_EOL, Setting::relationships());
-        $settings['reset_confirmation'] = 'RESETAR ' . mb_strtoupper($this->currentEvent->get()->name, 'UTF-8');
+        $settings['reset_confirmation'] = 'RESETAR '.mb_strtoupper($this->currentEvent->get()->name, 'UTF-8');
 
         return $settings;
     }
 
     private function purgeResetArtifacts(): void
     {
-        Storage::disk('public')->deleteDirectory('events/' . $this->currentEvent->get()->slug . '/testimonials');
-        Storage::disk('public')->deleteDirectory('events/' . $this->currentEvent->get()->slug . '/pdf');
+        Storage::disk('public')->deleteDirectory('events/'.$this->currentEvent->get()->slug.'/testimonials');
+        Storage::disk('public')->deleteDirectory('events/'.$this->currentEvent->get()->slug.'/pdf');
 
         if ($this->currentEvent->get()->slug === 'vida-vitoriosa') {
             Storage::disk('public')->deleteDirectory('testimonials');

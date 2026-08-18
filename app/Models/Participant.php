@@ -30,9 +30,22 @@ class Participant extends Model
         return $this->hasMany(PdfBatch::class);
     }
 
+    public function printFlows(): HasMany
+    {
+        return $this->hasMany(PrintFlow::class);
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active');
+    }
+
+    public function scopeCriticalForPrintFlow(Builder $query, int $minimum): Builder
+    {
+        return $query->whereRaw(
+            '(select count(*) from testimonials where testimonials.participant_id = participants.id and testimonials.event_id = participants.event_id and testimonials.status <> ?) < ?',
+            ['archived', $minimum]
+        );
     }
 
     public function getLabelAttribute(): string

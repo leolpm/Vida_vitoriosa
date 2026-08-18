@@ -2,18 +2,28 @@
 
 use App\Http\Controllers\Admin\AuthController as AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\PdfController;
-use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\ParticipantController;
+use App\Http\Controllers\Admin\PdfController;
+use App\Http\Controllers\Admin\PrintFlowController as AdminPrintFlowController;
+use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\SettingController;
+use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\PrintFlowPortalController;
 use App\Http\Controllers\TestimonialSubmissionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [TestimonialSubmissionController::class, 'create'])->name('testimonials.create');
 Route::post('/depoimentos/enviar', [TestimonialSubmissionController::class, 'store'])->name('testimonials.store');
 Route::get('/depoimentos/sucesso', [TestimonialSubmissionController::class, 'success'])->name('testimonials.success');
+
+Route::get('/fluxos/{token}', [PrintFlowPortalController::class, 'show'])->name('print-flows.show');
+Route::post('/fluxos/{token}/cartas/{testimonial}', [PrintFlowPortalController::class, 'review'])->name('print-flows.review');
+Route::post('/fluxos/{token}/concluir-revisao', [PrintFlowPortalController::class, 'finishReview'])->name('print-flows.review.finish');
+Route::get('/fluxos/{token}/imprimir', [PrintFlowPortalController::class, 'print'])->name('print-flows.print');
+Route::post('/fluxos/{token}/concluir', [PrintFlowPortalController::class, 'complete'])->name('print-flows.complete');
+Route::post('/fluxos/{token}/concluir-busca', [PrintFlowPortalController::class, 'completeSearch'])->name('print-flows.search.complete');
 
 Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/login', [AdminAuthController::class, 'showLoginForm'])->name('login');
@@ -41,6 +51,16 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/users/{user}/edit', [UserController::class, 'edit'])->name('users.edit');
         Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+
+        Route::resource('/team', TeamMemberController::class)
+            ->parameters(['team' => 'member'])
+            ->except('show');
+
+        Route::get('/print-flows', [AdminPrintFlowController::class, 'index'])->name('print-flows.index');
+        Route::get('/print-flows/create', [AdminPrintFlowController::class, 'create'])->name('print-flows.create');
+        Route::post('/print-flows', [AdminPrintFlowController::class, 'store'])->name('print-flows.store');
+        Route::post('/print-flows/{flow}/renew', [AdminPrintFlowController::class, 'renew'])->name('print-flows.renew');
+        Route::post('/print-flows/{flow}/cancel', [AdminPrintFlowController::class, 'cancel'])->name('print-flows.cancel');
 
         Route::get('/testimonials', [TestimonialController::class, 'index'])->name('testimonials.index');
         Route::get('/testimonials/{testimonial}', [TestimonialController::class, 'show'])->name('testimonials.show');

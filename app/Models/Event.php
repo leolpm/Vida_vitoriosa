@@ -35,6 +35,18 @@ class Event extends Model
             ->withTimestamps();
     }
 
+    public function teamMembers(): BelongsToMany
+    {
+        return $this->belongsToMany(TeamMember::class)
+            ->withPivot('is_active')
+            ->withTimestamps();
+    }
+
+    public function printFlows(): HasMany
+    {
+        return $this->hasMany(PrintFlow::class);
+    }
+
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('status', 'active');

@@ -123,6 +123,29 @@
     </div>
 </div>
 
+<div class="row g-3 mb-4">
+    <div class="col-12 col-md-6">
+        <a href="{{ route('admin.print-flows.index') }}" class="text-decoration-none text-reset">
+            <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Tarefas distribuídas, em revisão, prontas ou com impressão aberta neste evento.">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div><div class="text-secondary small">Fluxos de impressão abertos</div><div class="fs-3 fw-bold">{{ $openPrintFlowsCount }}</div></div>
+                    <div class="stat-icon"><i class="bi bi-printer"></i></div>
+                </div>
+            </div>
+        </a>
+    </div>
+    <div class="col-12 col-md-6">
+        <a href="{{ route('admin.print-flows.index') }}#critical-participants" class="text-decoration-none text-reset">
+            <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Participantes ativos abaixo da meta mínima de depoimentos configurada para este evento.">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div><div class="text-secondary small">Participantes críticos</div><div class="fs-3 fw-bold">{{ $criticalParticipantsCount }}</div></div>
+                    <div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
 <div class="row g-4">
     <div class="col-12 col-xl-7">
         <div class="card-surface p-4">
@@ -136,6 +159,8 @@
                 <a href="{{ route('admin.participants.create') }}" class="btn btn-gold">Novo participante</a>
                 <a href="{{ route('admin.users.create') }}" class="btn btn-outline-dark">Novo usuário</a>
                 <a href="{{ route('admin.testimonials.index') }}" class="btn btn-outline-dark">Ver depoimentos</a>
+                <a href="{{ route('admin.print-flows.create') }}" class="btn btn-outline-dark">Distribuir fluxo</a>
+                <a href="{{ route('admin.team.create') }}" class="btn btn-outline-dark">Novo membro</a>
                 <a href="{{ route('admin.pdf.index') }}" class="btn btn-outline-dark">Gerar PDF</a>
                 <a href="{{ route('admin.settings.index') }}" class="btn btn-outline-dark">Configurações</a>
             </div>
@@ -204,7 +229,7 @@
             <div class="section-eyebrow text-secondary mb-1">Resumo</div>
             <h2 class="h5 mb-3">Atenção operacional</h2>
             <p class="text-secondary mb-0">
-                O painel acompanha o fluxo de {{ $currentEvent->name }} com foco em mensagens, geração de PDFs e gestão de usuários administrativos sem dependência de senha.
+                O painel acompanha {{ $currentEvent->name }} com foco em mensagens, distribuição, revisão, impressão e gestão de usuários sem dependência de senha.
             </p>
         </div>
     </div>

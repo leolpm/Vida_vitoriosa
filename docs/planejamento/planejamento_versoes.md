@@ -41,7 +41,7 @@ v2.0.0
 |---|---|---|
 | `v1.0.0` | Estavel e congelada | Sistema atual do Vida Vitoriosa em modo monoevento |
 | `v2.0.0` | Implantada e operacional em HTTPS | Arquitetura multi-evento, subdominios e formulario EDD |
-| `v3.0.0` | Planejada | Fluxo de Impressao multi-evento |
+| `v3.0.0` | Implementada localmente; homologacao pendente | Fluxo de Impressao multi-evento |
 
 ## 3.1 Versao 1.0.0 - Vida Vitoriosa
 
@@ -113,6 +113,12 @@ docs/planejamento/planejamento_fluxo_impressao.md
 docs/planejamento/roadmap_fluxo_impressao.md
 ```
 
+Branch de implementacao:
+
+```text
+codex/v3-fluxo-impressao
+```
+
 Essa versao somente deve comecar depois da publicacao e validacao da `v2.0.0`.
 
 Escopo principal:
@@ -132,6 +138,14 @@ Tag prevista:
 ```text
 v3.0.0
 ```
+
+Estado atual:
+
+- estrutura, telas, regras e dados de demonstracao implementados localmente
+- migrations executadas somente no banco local
+- testes automatizados e validacao visual publica concluidos localmente
+- branch ainda nao publicada nem implantada
+- tag ainda nao criada
 
 ---
 
@@ -212,3 +226,4 @@ Nao devem ser feitas alteracoes diretamente enquanto o repositorio estiver em es
 | 2026-08-18 | Atualizacao da v2.0.0 para implementada e validada na branch | Diferenciar conclusao tecnica da criacao da tag de release |
 | 2026-08-18 | Registro da implantacao da v2.0.0 com ativacao EDD pendente | Separar deploy concluido do bloqueio externo de DNS e certificado |
 | 2026-08-18 | Atualizacao da v2.0.0 para operacional em HTTPS | Registrar a conclusao da ativacao do subdominio EDD |
+| 2026-08-18 | Atualizacao da v3.0.0 para implementada localmente e pendente de homologacao | Preservar a separacao entre implementacao, release e deploy |

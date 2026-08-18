@@ -73,6 +73,10 @@ class Setting extends Model
                 'surprise_text' => 'Não conte que você escreveu esta mensagem. Ela será entregue de forma especial durante o EDD e precisa permanecer em segredo.',
                 'relationships_json' => json_encode(['Líder', 'Supervisor', 'Pastor', 'Coordenador', 'Outro'], JSON_UNESCAPED_UNICODE),
                 'login_code_expires_minutes' => '15',
+                'print_flow_global_task_limit' => '3',
+                'print_flow_link_minutes' => '30',
+                'print_flow_access_limit' => '1',
+                'print_flow_min_testimonials' => '2',
             ];
         }
 
@@ -91,6 +95,10 @@ class Setting extends Model
             'surprise_title' => 'Este depoimento é uma surpresa e não pode ser revelado ao participante.',
             'surprise_text' => 'Não conte que você escreveu esta mensagem. Ela será entregue de forma especial e precisa permanecer em segredo.',
             'relationships_json' => json_encode(config('vida.relationships'), JSON_UNESCAPED_UNICODE),
+            'print_flow_global_task_limit' => '3',
+            'print_flow_link_minutes' => '30',
+            'print_flow_access_limit' => '1',
+            'print_flow_min_testimonials' => '3',
         ];
     }
 
@@ -106,6 +114,6 @@ class Setting extends Model
 
     public static function isEventScoped(string $key): bool
     {
-        return $key !== 'login_code_expires_minutes';
+        return ! in_array($key, ['login_code_expires_minutes', 'print_flow_global_task_limit'], true);
     }
 }

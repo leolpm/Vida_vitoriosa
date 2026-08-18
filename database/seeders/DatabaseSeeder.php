@@ -39,6 +39,8 @@ class DatabaseSeeder extends Seeder
                 $event->id => ['role' => 'admin', 'is_active' => true],
             ])->all());
         }
+
+        $this->call(PrintFlowDemoSeeder::class);
     }
 
     private function seedSettings(): void

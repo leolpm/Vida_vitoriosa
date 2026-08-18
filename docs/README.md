@@ -35,6 +35,7 @@ Este diretorio concentra planejamento, backlog, roadmap e documentos de decisao 
 ### Modulos implementados
 
 - `docs/modulos/multi-eventos.md`: arquitetura por dominio, isolamento, EDD e operacao da v2.0.0
+- `docs/modulos/fluxo-impressao.md`: distribuicao, acesso por token, revisao, impressao no navegador e auditoria da v3.0.0 local
 
 ### Implantacao
 
@@ -50,3 +51,4 @@ Este diretorio concentra planejamento, backlog, roadmap e documentos de decisao 
 | 2026-08-18 | Inclusao da documentacao canonica de multi-eventos | Registrar o comportamento efetivamente implementado na v2.0.0 |
 | 2026-08-18 | Inclusao do registro de implantacao da v2.0.0 | Documentar backup, contagens, realocacao dos participantes e pendencia externa do EDD |
 | 2026-08-18 | Atualizacao do estado HTTPS do EDD | Registrar a correcao do DNS, emissao do certificado e redirecionamento obrigatorio |
+| 2026-08-18 | Inclusao da documentacao canonica do Fluxo de Impressao | Registrar a implementacao local da v3.0.0 sem confundir com release ou deploy |

@@ -58,6 +58,35 @@
             @error('pdf_footer_text') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
+        <div class="col-12 mt-4">
+            <div class="border-top pt-4">
+                <div class="section-eyebrow text-secondary mb-1">Fluxo de Impressão</div>
+                <h2 class="h5 mb-1">Distribuição e acesso</h2>
+                <p class="text-secondary mb-0">A validade, os acessos e a meta são específicos de {{ $currentEvent->name }}. O limite de tarefas é global.</p>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-3">
+            <label class="form-label fw-semibold" for="print_flow_global_task_limit">Limite global por membro</label>
+            <input type="number" min="1" max="100" name="print_flow_global_task_limit" id="print_flow_global_task_limit" class="form-control form-control-lg @error('print_flow_global_task_limit') is-invalid @enderror" value="{{ old('print_flow_global_task_limit', $settings['print_flow_global_task_limit']) }}">
+            @error('print_flow_global_task_limit')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label fw-semibold" for="print_flow_link_minutes">Validade do link (minutos)</label>
+            <input type="number" min="5" max="1440" name="print_flow_link_minutes" id="print_flow_link_minutes" class="form-control form-control-lg @error('print_flow_link_minutes') is-invalid @enderror" value="{{ old('print_flow_link_minutes', $settings['print_flow_link_minutes']) }}">
+            @error('print_flow_link_minutes')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label fw-semibold" for="print_flow_access_limit">Acessos por link</label>
+            <input type="number" min="1" max="20" name="print_flow_access_limit" id="print_flow_access_limit" class="form-control form-control-lg @error('print_flow_access_limit') is-invalid @enderror" value="{{ old('print_flow_access_limit', $settings['print_flow_access_limit']) }}">
+            @error('print_flow_access_limit')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+        <div class="col-12 col-md-3">
+            <label class="form-label fw-semibold" for="print_flow_min_testimonials">Meta mínima de depoimentos</label>
+            <input type="number" min="1" max="100" name="print_flow_min_testimonials" id="print_flow_min_testimonials" class="form-control form-control-lg @error('print_flow_min_testimonials') is-invalid @enderror" value="{{ old('print_flow_min_testimonials', $settings['print_flow_min_testimonials']) }}">
+            @error('print_flow_min_testimonials')<div class="invalid-feedback">{{ $message }}</div>@enderror
+        </div>
+
         <div class="col-12 col-md-4">
             <label class="form-label fw-semibold" for="recipient_term">Termo do destinatário</label>
             <input type="text" name="recipient_term" id="recipient_term" class="form-control form-control-lg @error('recipient_term') is-invalid @enderror" value="{{ old('recipient_term', $settings['recipient_term']) }}">

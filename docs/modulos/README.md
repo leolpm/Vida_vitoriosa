@@ -17,6 +17,7 @@ Use `docs/modulos/template-modulo.md` como base para novos modulos ou revisoes c
 ## Modulos documentados
 
 - `docs/modulos/multi-eventos.md`: resolucao por dominio, isolamento de dados, EDD, operacao e testes da v2.0.0
+- `docs/modulos/fluxo-impressao.md`: equipe, distribuicao, tokens, revisao, impressao, conclusao e auditoria da v3.0.0 local
 
 ## Historico de alteracoes
 
@@ -24,3 +25,4 @@ Use `docs/modulos/template-modulo.md` como base para novos modulos ou revisoes c
 |---|---|---|
 | 2026-08-18 | Criacao do indice de documentacao modular | Preparar fontes canonicas para as proximas versoes do sistema |
 | 2026-08-18 | Inclusao do modulo multi-eventos | Consolidar a especificacao da arquitetura implementada na v2.0.0 |
+| 2026-08-18 | Inclusao do modulo Fluxo de Impressao | Consolidar o comportamento implementado localmente para a v3.0.0 |

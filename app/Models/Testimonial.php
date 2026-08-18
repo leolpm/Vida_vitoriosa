@@ -6,6 +6,8 @@ use App\Models\Concerns\BelongsToEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use LogicException;
 
 class Testimonial extends Model
@@ -81,6 +83,18 @@ class Testimonial extends Model
     public function pdfBatch(): BelongsTo
     {
         return $this->belongsTo(PdfBatch::class);
+    }
+
+    public function printFlows(): BelongsToMany
+    {
+        return $this->belongsToMany(PrintFlow::class, 'print_flow_testimonial')
+            ->withPivot('event_id')
+            ->withTimestamps();
+    }
+
+    public function printFlowReviews(): HasMany
+    {
+        return $this->hasMany(PrintFlowReview::class);
     }
 
     public function getPhotoUrlAttribute(): ?string

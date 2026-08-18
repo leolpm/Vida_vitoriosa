@@ -1,6 +1,6 @@
 # Roadmap do Fluxo de Impressao
 
-> Status: ativo
+> Status: implementado localmente; homologacao e release pendentes
 > Tipo: roadmap de implementacao
 > Fonte canonica relacionada: `docs/planejamento/planejamento_fluxo_impressao.md`
 > Dependencia arquitetural: `docs/planejamento/planejamento_multi_eventos.md`
@@ -259,13 +259,12 @@ Controle:
 
 ---
 
-## 6. Pendencias abertas para execucao futura
+## 6. Pendencias abertas para homologacao
 
-- definir o modelo exato do token de acesso do link
-- definir os campos finais do cadastro de equipe
-- definir o formato da fila de tarefas por membro
-- definir a persistencia do historico de revisao e aprovacao
-- confirmar o reaproveitamento total do design atual nas novas telas
+- executar validacao visual autenticada das telas administrativas
+- homologar a janela de impressao e a contagem de paginas com dados reais dos dois eventos
+- validar o fluxo com a equipe operacional antes de desativar a geracao de novos PDFs
+- preparar e aprovar o procedimento de implantacao e rollback da v3.0.0
 
 ---
 
@@ -291,3 +290,4 @@ Ao final do roadmap, o sistema deve operar com:
 | Data | Alteracao | Motivo |
 |---|---|---|
 | 2026-08-18 | Fase 0 substituida pela arquitetura multi-evento e inclusao de testes automatizados e visuais como criterio de conclusao | Alinhar o roadmap ao planejamento por subdominios antes da implementacao do Fluxo de Impressao |
+| 2026-08-18 | Fases 1 a 6 implementadas localmente e roadmap movido para homologacao | Registrar o estado tecnico sem declarar release ou implantacao da v3.0.0 |

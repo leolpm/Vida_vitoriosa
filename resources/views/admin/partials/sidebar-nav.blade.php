@@ -19,8 +19,14 @@
     <a href="{{ route('admin.reports.participants') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
         <i class="bi bi-graph-up"></i> Relatórios
     </a>
+    <a href="{{ route('admin.print-flows.index') }}" class="{{ request()->routeIs('admin.print-flows.*') ? 'active' : '' }}">
+        <i class="bi bi-printer"></i> Fluxo de Impressão
+    </a>
+    <a href="{{ route('admin.team.index') }}" class="{{ request()->routeIs('admin.team.*') ? 'active' : '' }}">
+        <i class="bi bi-person-workspace"></i> Equipe
+    </a>
     <a href="{{ route('admin.pdf.index') }}" class="{{ request()->routeIs('admin.pdf.*') ? 'active' : '' }}">
-        <i class="bi bi-file-earmark-pdf"></i> PDFs
+        <i class="bi bi-file-earmark-pdf"></i> PDFs legados
     </a>
     <a href="{{ route('admin.settings.index') }}" class="{{ request()->routeIs('admin.settings.*') ? 'active' : '' }}">
         <i class="bi bi-sliders"></i> Configurações
