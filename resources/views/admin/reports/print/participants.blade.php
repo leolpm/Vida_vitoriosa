@@ -5,7 +5,7 @@
 @section('content')
 <div class="d-flex justify-content-between align-items-start gap-3 mb-3 no-print">
     <div>
-        <div class="print-title">Relatório de participantes</div>
+        <div class="print-title">Relatório de participantes - {{ $currentEvent->name }}</div>
         <div class="print-subtitle">Use a janela do navegador para imprimir ou salvar como PDF.</div>
     </div>
     <a href="javascript:window.close()" class="btn btn-outline-dark btn-sm">Fechar</a>

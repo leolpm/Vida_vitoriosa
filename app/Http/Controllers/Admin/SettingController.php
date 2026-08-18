@@ -7,14 +7,20 @@ use App\Models\Participant;
 use App\Models\PdfBatch;
 use App\Models\Setting;
 use App\Models\Testimonial;
+use App\Support\CurrentEvent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Illuminate\Validation\Rule;
 
 class SettingController extends Controller
 {
+    public function __construct(private readonly CurrentEvent $currentEvent)
+    {
+    }
+
     public function index(): View
     {
         return view('admin.settings.index', [
@@ -30,6 +36,12 @@ class SettingController extends Controller
             'retreat_year' => ['required', 'string', 'max:20'],
             'pdf_footer_text' => ['nullable', 'string', 'max:255'],
             'testimonials_closes_at' => ['nullable', 'date_format:Y-m-d\TH:i'],
+            'recipient_term' => ['required', 'string', 'max:80'],
+            'form_title' => ['required', 'string', 'max:255'],
+            'form_intro' => ['required', 'string', 'max:1000'],
+            'surprise_title' => ['required', 'string', 'max:255'],
+            'surprise_text' => ['required', 'string', 'max:1000'],
+            'relationships_text' => ['required', 'string', 'max:2000'],
             'login_code_expires_minutes' => ['required', 'integer', 'min:1', 'max:240'],
             'public_site_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             'pdf_header_image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
@@ -41,17 +53,36 @@ class SettingController extends Controller
             'retreat_year',
             'pdf_footer_text',
             'testimonials_closes_at',
+            'recipient_term',
+            'form_title',
+            'form_intro',
+            'surprise_title',
+            'surprise_text',
             'login_code_expires_minutes',
         ] as $key) {
             Setting::put($key, $validated[$key] ?? '');
         }
 
+        $relationships = collect(preg_split('/[\r\n,;]+/u', $validated['relationships_text']) ?: [])
+            ->map(fn (string $value) => trim($value))
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
+        Setting::put('relationships_json', json_encode($relationships, JSON_UNESCAPED_UNICODE));
+
         if ($request->hasFile('public_site_image')) {
-            Setting::put('public_site_image_path', $request->file('public_site_image')->store('settings', 'public'));
+            Setting::put('public_site_image_path', $request->file('public_site_image')->store(
+                'events/' . $this->currentEvent->get()->slug . '/settings',
+                'public'
+            ));
         }
 
         if ($request->hasFile('pdf_header_image')) {
-            Setting::put('pdf_header_image_path', $request->file('pdf_header_image')->store('settings', 'public'));
+            Setting::put('pdf_header_image_path', $request->file('pdf_header_image')->store(
+                'events/' . $this->currentEvent->get()->slug . '/settings',
+                'public'
+            ));
         }
 
         return redirect()->route('admin.settings.index')->with('success', 'Configurações atualizadas com sucesso.');
@@ -59,8 +90,10 @@ class SettingController extends Controller
 
     public function reset(Request $request): RedirectResponse
     {
+        $confirmation = 'RESETAR ' . mb_strtoupper($this->currentEvent->get()->name, 'UTF-8');
+
         $request->validate([
-            'confirmation' => ['required', 'string', 'in:RESETAR'],
+            'confirmation' => ['required', 'string', Rule::in([$confirmation])],
         ]);
 
         DB::transaction(function (): void {
@@ -73,7 +106,7 @@ class SettingController extends Controller
 
         return redirect()
             ->route('admin.settings.index')
-            ->with('success', 'Sistema resetado com sucesso. Participantes, depoimentos e arquivos gerados foram apagados.');
+            ->with('success', 'Os dados do evento ' . $this->currentEvent->get()->name . ' foram apagados com sucesso.');
     }
 
     private function allSettings(): array
@@ -93,15 +126,31 @@ class SettingController extends Controller
             ? '/storage/' . ltrim($settings['pdf_header_image_path'], '/')
             : null;
 
+        if ($this->currentEvent->get()->slug === 'edd') {
+            if (! $settings['public_site_image_path'] || ! Storage::disk('public')->exists($settings['public_site_image_path'])) {
+                $settings['public_site_image_url'] = asset('images/events/edd/edd-public-banner.png');
+            }
+
+            if (! $settings['pdf_header_image_path'] || ! Storage::disk('public')->exists($settings['pdf_header_image_path'])) {
+                $settings['pdf_header_image_url'] = asset('images/events/edd/edd-pdf-banner.png');
+            }
+        }
+
+        $settings['relationships_text'] = implode(PHP_EOL, Setting::relationships());
+        $settings['reset_confirmation'] = 'RESETAR ' . mb_strtoupper($this->currentEvent->get()->name, 'UTF-8');
+
         return $settings;
     }
 
     private function purgeResetArtifacts(): void
     {
-        Storage::disk('public')->deleteDirectory('testimonials');
-        Storage::disk('public')->deleteDirectory('pdf');
-        Storage::disk('public')->deleteDirectory('tmp');
-        Storage::disk('local')->deleteDirectory('pdf-temp');
-        Storage::disk('local')->deleteDirectory('pdf-emojis');
+        Storage::disk('public')->deleteDirectory('events/' . $this->currentEvent->get()->slug . '/testimonials');
+        Storage::disk('public')->deleteDirectory('events/' . $this->currentEvent->get()->slug . '/pdf');
+
+        if ($this->currentEvent->get()->slug === 'vida-vitoriosa') {
+            Storage::disk('public')->deleteDirectory('testimonials');
+            Storage::disk('public')->deleteDirectory('pdf');
+            Storage::disk('public')->deleteDirectory('tmp');
+        }
     }
 }

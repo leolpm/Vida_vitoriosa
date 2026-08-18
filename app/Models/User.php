@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class User extends Authenticatable
 {
@@ -42,5 +43,26 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin' && $this->is_active;
+    }
+
+    public function events(): BelongsToMany
+    {
+        return $this->belongsToMany(Event::class)
+            ->withPivot(['role', 'is_active'])
+            ->withTimestamps();
+    }
+
+    public function canAccessEvent(Event $event): bool
+    {
+        $permissions = $this->events();
+
+        if (! $permissions->exists()) {
+            return true;
+        }
+
+        return $permissions
+            ->whereKey($event->getKey())
+            ->wherePivot('is_active', true)
+            ->exists();
     }
 }

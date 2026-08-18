@@ -168,7 +168,7 @@
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="event-{{ $currentEvent->slug }}">
 @php($currentUser = auth()->user())
 <div class="admin-shell">
     <aside class="admin-sidebar d-none d-lg-flex">
@@ -187,7 +187,31 @@
                     <h1 class="h4 mb-0">@yield('page-title', 'Painel administrativo')</h1>
                 </div>
             </div>
-            <div class="d-flex gap-2">
+            <div class="d-flex gap-2 align-items-center">
+                @php
+                    $eventLinks = \App\Models\Event::active()
+                        ->whereKeyNot($currentEvent->id)
+                        ->get()
+                        ->filter(fn ($event) => auth()->user()?->canAccessEvent($event))
+                        ->mapWithKeys(fn ($event) => [
+                            $event->id => app(\App\Services\EventUrlGenerator::class)->forEvent($event),
+                        ])
+                        ->filter();
+                @endphp
+                @if ($eventLinks->isNotEmpty())
+                    <div class="dropdown">
+                        <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            <i class="bi bi-calendar-event me-1"></i>{{ $currentEvent->name }}
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            @foreach ($eventLinks as $eventId => $eventUrl)
+                                <li><a class="dropdown-item" href="{{ $eventUrl }}">Ir para {{ \App\Models\Event::find($eventId)?->name }}</a></li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @else
+                    <span class="badge text-bg-primary p-2">{{ $currentEvent->name }}</span>
+                @endif
                 <a href="{{ route('testimonials.create') }}" class="btn btn-outline-dark">Ver site público</a>
             </div>
         </div>
@@ -210,7 +234,7 @@
 
 <div class="offcanvas offcanvas-start admin-offcanvas text-white" tabindex="-1" id="adminSidebarMobile" aria-labelledby="adminSidebarMobileLabel">
     <div class="offcanvas-header border-bottom border-white border-opacity-10">
-        <h5 class="offcanvas-title brand" id="adminSidebarMobileLabel">Vida Vitoriosa</h5>
+        <h5 class="offcanvas-title brand" id="adminSidebarMobileLabel">{{ $currentEvent->name }}</h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Fechar"></button>
     </div>
     <div class="offcanvas-body d-flex flex-column gap-4">

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\Event;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,12 +34,18 @@ class UserController extends Controller
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'role' => 'admin',
             'is_active' => $request->boolean('is_active', true),
         ]);
+
+        $user->events()->syncWithoutDetaching(
+            Event::active()->get()->mapWithKeys(fn (Event $event) => [
+                $event->id => ['role' => 'admin', 'is_active' => true],
+            ])->all()
+        );
 
         return redirect()->route('admin.users.index')->with('success', 'Usuário administrativo criado com sucesso.');
     }

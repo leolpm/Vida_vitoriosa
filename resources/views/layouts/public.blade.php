@@ -22,6 +22,18 @@
             --deep: #0f1f2c;
         }
 
+        body.event-edd {
+            --ink: #0a245f;
+            --sand: #edf4ff;
+            --rose: #164fd7;
+            --gold: #1879ed;
+            --deep: #041b58;
+            background:
+                radial-gradient(circle at 8% 4%, rgba(27, 111, 239, 0.22), transparent 28%),
+                radial-gradient(circle at 92% 88%, rgba(59, 157, 255, 0.18), transparent 30%),
+                linear-gradient(145deg, #eef5ff 0%, #f8fbff 45%, #e6f1ff 100%);
+        }
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background:
@@ -126,7 +138,7 @@
     </style>
     @stack('styles')
 </head>
-<body>
+<body class="event-{{ $currentEvent->slug }}">
 <nav class="navbar navbar-expand-lg navbar-light py-3 site-navbar">
     <div class="container">
         <a class="navbar-brand d-flex align-items-center gap-3" href="{{ route('testimonials.create') }}">
@@ -134,8 +146,8 @@
                 <i class="bi bi-heart-fill"></i>
             </span>
             <span>
-                <span class="d-block fw-bold">{{ config('app.name') }}</span>
-                <small class="text-secondary">Retiro Vida Vitoriosa</small>
+                <span class="d-block fw-bold">{{ $currentEvent->name }}</span>
+                <small class="text-secondary">{{ $currentEvent->slug === 'edd' ? 'Encontro de Discipuladores com Deus' : 'Retiro Vida Vitoriosa' }}</small>
             </span>
         </a>
         <div class="navbar-actions">

@@ -12,12 +12,12 @@
                 <div>
                     <div class="section-eyebrow text-secondary mb-1">Panorama</div>
                     <h2 class="h5 mb-1">Métricas operacionais</h2>
-                    <p class="text-secondary mb-0">Indicadores gerais do retiro, cadastro e acesso ao painel.</p>
+                    <p class="text-secondary mb-0">Indicadores de {{ $currentEvent->name }}, cadastro e acesso ao painel.</p>
                 </div>
             </div>
             <div class="row row-cols-1 row-cols-md-2 g-3">
                 <div class="col">
-                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Total de participantes cadastrados no sistema.">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Total de participantes cadastrados em {{ $currentEvent->name }}.">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <div class="text-secondary small">Participantes</div>
@@ -50,7 +50,7 @@
                     </div>
                 </div>
                 <div class="col">
-                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Quantidade de usuários administrativos ativos com acesso ao painel.">
+                    <div class="stat-card p-3 h-100" data-bs-toggle="tooltip" data-bs-title="Quantidade global de usuários administrativos ativos. Esta métrica é compartilhada entre os eventos.">
                         <div class="d-flex align-items-center justify-content-between">
                             <div>
                                 <div class="text-secondary small">Usuários</div>
@@ -204,7 +204,7 @@
             <div class="section-eyebrow text-secondary mb-1">Resumo</div>
             <h2 class="h5 mb-3">Atenção operacional</h2>
             <p class="text-secondary mb-0">
-                O painel foi desenhado para acompanhar o fluxo do retiro com foco em depoimentos, geração de PDFs e gestão de usuários administrativos sem dependência de senha.
+                O painel acompanha o fluxo de {{ $currentEvent->name }} com foco em mensagens, geração de PDFs e gestão de usuários administrativos sem dependência de senha.
             </p>
         </div>
     </div>

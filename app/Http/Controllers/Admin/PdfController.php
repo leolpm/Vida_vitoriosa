@@ -7,6 +7,7 @@ use App\Models\Participant;
 use App\Models\PdfBatch;
 use App\Models\Setting;
 use App\Models\Testimonial;
+use App\Support\CurrentEvent;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,10 @@ use Illuminate\View\View;
 
 class PdfController extends Controller
 {
+    public function __construct(private readonly CurrentEvent $currentEvent)
+    {
+    }
+
     public function index(): View
     {
         $participantsFilter = request()->string('participants_filter')->toString() ?: 'all';
@@ -121,7 +126,7 @@ class PdfController extends Controller
         ])->setPaper('a4', 'portrait');
 
         $fileName = Str::slug($participant->label, '-') . '_' . $generatedAt->format('Y-m-d_H-i-s') . '.pdf';
-        $filePath = "pdf/participant-{$participant->id}/{$fileName}";
+        $filePath = "events/{$this->currentEvent->get()->slug}/pdf/participant-{$participant->id}/{$fileName}";
         Storage::disk('public')->put($filePath, $pdf->output());
 
         $batch->update([
@@ -170,6 +175,18 @@ class PdfController extends Controller
         $settings['pdf_header_image_local_path'] = $settings['pdf_header_image_path']
             ? str_replace('\\', '/', Storage::disk('public')->path($settings['pdf_header_image_path']))
             : null;
+
+        if ($this->currentEvent->get()->slug === 'edd') {
+            if (! $settings['public_site_image_local_path'] || ! file_exists($settings['public_site_image_local_path'])) {
+                $settings['public_site_image_url'] = asset('images/events/edd/edd-public-banner.png');
+                $settings['public_site_image_local_path'] = str_replace('\\', '/', public_path('images/events/edd/edd-public-banner.png'));
+            }
+
+            if (! $settings['pdf_header_image_local_path'] || ! file_exists($settings['pdf_header_image_local_path'])) {
+                $settings['pdf_header_image_url'] = asset('images/events/edd/edd-pdf-banner.png');
+                $settings['pdf_header_image_local_path'] = str_replace('\\', '/', public_path('images/events/edd/edd-pdf-banner.png'));
+            }
+        }
 
         return $settings;
     }

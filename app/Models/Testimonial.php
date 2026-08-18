@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,7 @@ use Illuminate\Support\Facades\Storage;
 
 class Testimonial extends Model
 {
-    use HasFactory;
+    use BelongsToEvent, HasFactory;
 
     public const STATUS_LABELS = [
         'received' => 'Recebido',
@@ -19,6 +20,7 @@ class Testimonial extends Model
     ];
 
     protected $fillable = [
+        'event_id',
         'participant_id',
         'sender_name',
         'phone',

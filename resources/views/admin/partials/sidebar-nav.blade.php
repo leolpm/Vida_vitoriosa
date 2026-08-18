@@ -1,6 +1,6 @@
 <div>
-    <div class="brand">Vida Vitoriosa</div>
-    <div class="small text-white-50">Painel administrativo</div>
+    <div class="brand">{{ $currentEvent->name }}</div>
+    <div class="small text-white-50">Painel administrativo do evento</div>
 </div>
 
 <nav class="admin-nav d-grid gap-1">

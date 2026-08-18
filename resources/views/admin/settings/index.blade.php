@@ -2,22 +2,25 @@
 
 @section('title', 'Configurações')
 @section('section', 'Sistema')
-@section('page-title', 'Configurações visuais')
+@section('page-title', 'Configurações do ' . $currentEvent->name)
 
 @section('content')
 <div class="card-surface p-4">
+    <div class="alert alert-primary border-0 rounded-4 mb-4">
+        Você está alterando somente o evento <strong>{{ $currentEvent->name }}</strong>. A expiração do código de login é uma configuração global.
+    </div>
     <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="row g-3">
         @csrf
         @method('PUT')
 
         <div class="col-12 col-md-6">
-            <label class="form-label fw-semibold" for="retreat_name">Nome do retiro</label>
+            <label class="form-label fw-semibold" for="retreat_name">Nome do evento</label>
             <input type="text" name="retreat_name" id="retreat_name" class="form-control form-control-lg @error('retreat_name') is-invalid @enderror" value="{{ old('retreat_name', $settings['retreat_name']) }}">
             @error('retreat_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
         <div class="col-12 col-md-6">
-            <label class="form-label fw-semibold" for="retreat_location">Local do retiro</label>
+            <label class="form-label fw-semibold" for="retreat_location">Local do evento</label>
             <input type="text" name="retreat_location" id="retreat_location" class="form-control form-control-lg @error('retreat_location') is-invalid @enderror" value="{{ old('retreat_location', $settings['retreat_location']) }}">
             @error('retreat_location') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
@@ -55,6 +58,43 @@
             @error('pdf_footer_text') <div class="invalid-feedback">{{ $message }}</div> @enderror
         </div>
 
+        <div class="col-12 col-md-4">
+            <label class="form-label fw-semibold" for="recipient_term">Termo do destinatário</label>
+            <input type="text" name="recipient_term" id="recipient_term" class="form-control form-control-lg @error('recipient_term') is-invalid @enderror" value="{{ old('recipient_term', $settings['recipient_term']) }}">
+            @error('recipient_term') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="col-12 col-md-8">
+            <label class="form-label fw-semibold" for="form_title">Título do formulário</label>
+            <input type="text" name="form_title" id="form_title" class="form-control form-control-lg @error('form_title') is-invalid @enderror" value="{{ old('form_title', $settings['form_title']) }}">
+            @error('form_title') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fw-semibold" for="form_intro">Texto de apresentação</label>
+            <textarea name="form_intro" id="form_intro" rows="3" class="form-control @error('form_intro') is-invalid @enderror">{{ old('form_intro', $settings['form_intro']) }}</textarea>
+            @error('form_intro') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold" for="surprise_title">Título do aviso de surpresa</label>
+            <input type="text" name="surprise_title" id="surprise_title" class="form-control @error('surprise_title') is-invalid @enderror" value="{{ old('surprise_title', $settings['surprise_title']) }}">
+            @error('surprise_title') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="form-label fw-semibold" for="surprise_text">Texto do aviso de surpresa</label>
+            <textarea name="surprise_text" id="surprise_text" rows="3" class="form-control @error('surprise_text') is-invalid @enderror">{{ old('surprise_text', $settings['surprise_text']) }}</textarea>
+            @error('surprise_text') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
+        <div class="col-12">
+            <label class="form-label fw-semibold" for="relationships_text">Opções de relação</label>
+            <textarea name="relationships_text" id="relationships_text" rows="5" class="form-control @error('relationships_text') is-invalid @enderror">{{ old('relationships_text', $settings['relationships_text']) }}</textarea>
+            <div class="form-text">Informe uma opção por linha. A opção "Outro" habilita o campo de complemento no formulário.</div>
+            @error('relationships_text') <div class="invalid-feedback">{{ $message }}</div> @enderror
+        </div>
+
         <div class="col-12 col-lg-6">
             <label class="form-label fw-semibold" for="public_site_image">Imagem do site público</label>
             <input type="file" name="public_site_image" id="public_site_image" class="form-control @error('public_site_image') is-invalid @enderror" accept=".jpg,.jpeg,.png,.webp,image/*">
@@ -90,15 +130,15 @@
     <div class="d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <div class="pe-lg-3">
             <div class="section-eyebrow text-danger mb-2">Zona de risco</div>
-            <h2 class="h5 mb-2">Resetar sistema</h2>
+            <h2 class="h5 mb-2">Resetar dados do evento</h2>
             <p class="mb-0 text-secondary">
-                Apaga todos os participantes, depoimentos, PDFs gerados e imagens dos depoimentos.
+                Apaga somente os participantes, depoimentos, PDFs gerados e imagens de <strong>{{ $currentEvent->name }}</strong>.
                 Essa ação não pode ser revertida.
             </p>
         </div>
         <button class="btn btn-outline-danger btn-lg" type="button" data-bs-toggle="modal" data-bs-target="#resetSystemModal">
             <i class="bi bi-trash3 me-2"></i>
-            Resetar sistema
+            Resetar {{ $currentEvent->name }}
         </button>
     </div>
 </div>
@@ -108,7 +148,7 @@
         <div class="modal-content border-0 shadow">
             <div class="modal-header bg-danger text-white">
                 <div>
-                    <h5 class="modal-title mb-1" id="resetSystemModalLabel">Confirmar reset do sistema</h5>
+                    <h5 class="modal-title mb-1" id="resetSystemModalLabel">Confirmar reset de {{ $currentEvent->name }}</h5>
                     <small class="text-white-50">Ação irreversível</small>
                 </div>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Fechar"></button>
@@ -118,16 +158,16 @@
                 @csrf
                 <div class="modal-body">
                     <div class="alert alert-danger border-0 mb-3">
-                        Atenção: ao continuar, todos os participantes, depoimentos, PDFs gerados e imagens dos depoimentos serão apagados sem possibilidade de recuperação.
+                        Atenção: ao continuar, os participantes, depoimentos, PDFs gerados e imagens de {{ $currentEvent->name }} serão apagados sem possibilidade de recuperação. Os outros eventos não serão afetados.
                     </div>
 
-                    <label for="systemResetConfirmation" class="form-label fw-semibold">Digite RESETAR para confirmar</label>
+                    <label for="systemResetConfirmation" class="form-label fw-semibold">Digite {{ $settings['reset_confirmation'] }} para confirmar</label>
                     <input
                         type="text"
                         name="confirmation"
                         id="systemResetConfirmation"
                         class="form-control form-control-lg @error('confirmation') is-invalid @enderror"
-                        placeholder="RESETAR"
+                        placeholder="{{ $settings['reset_confirmation'] }}"
                         autocomplete="off"
                         inputmode="text"
                     >
@@ -161,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const sync = () => {
-        submit.disabled = input.value.trim() !== 'RESETAR';
+        submit.disabled = input.value.trim() !== @json($settings['reset_confirmation']);
     };
 
     input.addEventListener('input', sync);

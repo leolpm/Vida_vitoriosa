@@ -7,6 +7,7 @@ use App\Exports\TestimonialsReportExport;
 use App\Http\Controllers\Controller;
 use App\Models\Participant;
 use App\Models\Testimonial;
+use App\Support\CurrentEvent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -14,6 +15,10 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class ReportController extends Controller
 {
+    public function __construct(private readonly CurrentEvent $currentEvent)
+    {
+    }
+
     public function participants(Request $request): View
     {
         $filter = $this->participantFilter($request);
@@ -43,7 +48,7 @@ class ReportController extends Controller
 
         return Excel::download(
             new ParticipantsReportExport($this->participantsQuery($filter)->orderBy('name')->get()),
-            'relatorio_participantes.xlsx'
+            'relatorio_participantes_' . $this->currentEvent->get()->slug . '.xlsx'
         );
     }
 
@@ -82,7 +87,7 @@ class ReportController extends Controller
 
         return Excel::download(
             new TestimonialsReportExport($this->testimonialsQuery($status, $generated)->latest()->get()),
-            'relatorio_depoimentos.xlsx'
+            'relatorio_depoimentos_' . $this->currentEvent->get()->slug . '.xlsx'
         );
     }
 

@@ -3,8 +3,6 @@
 @section('title', 'Enviar depoimento')
 
 @section('content')
-@php($relationships = config('vida.relationships'))
-
 @push('styles')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/intl-tel-input@25.15.0/build/css/intlTelInput.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css">
@@ -212,6 +210,93 @@
         opacity: 1;
         color: #6f6458;
     }
+
+    .event-edd .form-stage {
+        max-width: 1040px;
+    }
+
+    .event-edd .paper-card {
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, .96), rgba(235, 244, 255, .98)),
+            #edf5ff;
+        border-color: rgba(13, 73, 178, .15);
+        box-shadow: 0 28px 80px rgba(3, 38, 112, .18);
+    }
+
+    .event-edd .paper-header {
+        padding: .85rem .85rem 0;
+    }
+
+    .event-edd .paper-banner {
+        aspect-ratio: 2089 / 753;
+        min-height: 0;
+        padding: 0;
+        border-radius: 1.35rem;
+        background: #05267c;
+        box-shadow: 0 18px 42px rgba(4, 36, 116, .28);
+    }
+
+    .event-edd .paper-banner img {
+        border-radius: 1.35rem;
+        object-fit: cover;
+    }
+
+    .event-edd .section-eyebrow {
+        color: #1455bd;
+        font-weight: 800;
+    }
+
+    .event-edd .form-title {
+        color: #071f5f;
+    }
+
+    .event-edd .form-subtitle,
+    .event-edd .field-label,
+    .event-edd .mini-hint {
+        color: #243c72;
+    }
+
+    .event-edd .form-control:focus,
+    .event-edd .form-select:focus {
+        border-color: #176ee0;
+        box-shadow: 0 0 0 .2rem rgba(23, 110, 224, .14);
+    }
+
+    .event-edd .surprise-callout {
+        background: linear-gradient(135deg, rgba(16, 83, 203, .10), rgba(42, 142, 246, .15));
+        border-color: rgba(17, 91, 210, .24);
+        color: #092d83;
+        box-shadow: 0 14px 34px rgba(5, 57, 155, .09);
+    }
+
+    .event-edd .surprise-callout .surprise-badge {
+        background: #0b47ba;
+        color: #fff;
+    }
+
+    .event-edd .surprise-callout .surprise-text {
+        color: #20417e;
+    }
+
+    .event-edd .btn-submit {
+        background: linear-gradient(135deg, #06369c, #147ff1);
+        box-shadow: 0 12px 30px rgba(6, 67, 180, .30);
+    }
+
+    .event-edd .choices__list--dropdown .choices__item--selectable.is-highlighted {
+        background: #115ed2;
+    }
+
+    @media (max-width: 575.98px) {
+        .event-edd .paper-banner {
+            aspect-ratio: 4 / 3;
+            min-height: 0;
+        }
+
+        .event-edd .paper-banner img {
+            object-position: 47% center;
+        }
+    }
 </style>
 @endpush
 
@@ -220,7 +305,7 @@
         <div class="paper-header">
             <div class="paper-banner">
                 @if ($publicImageUrl)
-                    <img src="{{ $publicImageUrl }}" alt="Imagem do retiro">
+                    <img src="{{ $publicImageUrl }}" alt="Arte do evento {{ $settings['retreat_name'] }}">
                 @else
                     <div class="fallback">{{ $settings['retreat_name'] }}</div>
                 @endif
@@ -229,18 +314,15 @@
 
         <div class="paper-body">
             <div class="mb-4">
-                <div class="section-eyebrow text-center mb-2">Vida Vitoriosa</div>
-                <h1 class="form-title mb-3">Envie um depoimento especial para um participante do retiro</h1>
-                <p class="form-subtitle mb-0">
-                    Envie uma mensagem de carinho e encorajamento para um participante do retiro Vida Vitoriosa.
-                    Sua mensagem será entregue de forma especial a quem você ama.
-                </p>
+                <div class="section-eyebrow text-center mb-2">{{ $settings['retreat_name'] }}</div>
+                <h1 class="form-title mb-3">{{ $settings['form_title'] }}</h1>
+                <p class="form-subtitle mb-0">{{ $settings['form_intro'] }}</p>
             </div>
 
             @if ($testimonialsClosed)
                 <div class="surprise-callout mb-4 border-danger-subtle">
                     <div class="surprise-badge">Encerrado</div>
-                    <div class="surprise-title">O período para envio de depoimentos foi encerrado.</div>
+                    <div class="surprise-title">{{ $eventInactive ? 'Este evento não está recebendo novas mensagens no momento.' : 'O período para envio de depoimentos foi encerrado.' }}</div>
                     <div class="surprise-text">
                         Agradecemos seu carinho e participação.
                         @if ($testimonialsClosesAtLabel)
@@ -251,10 +333,8 @@
             @else
                 <div class="surprise-callout mb-4">
                     <div class="surprise-badge">Atenção: surpresa</div>
-                    <div class="surprise-title">Este depoimento é uma surpresa e não pode ser revelado ao participante.</div>
-                    <div class="surprise-text">
-                        Não conte que você escreveu esta mensagem. Ela será entregue de forma especial e precisa permanecer em segredo.
-                    </div>
+                    <div class="surprise-title">{{ $settings['surprise_title'] }}</div>
+                    <div class="surprise-text">{{ $settings['surprise_text'] }}</div>
                 </div>
 
                 <form action="{{ route('testimonials.store') }}" method="POST" enctype="multipart/form-data" class="row g-3">
@@ -273,9 +353,9 @@
                     </div>
 
                     <div class="col-12 col-md-6">
-                        <label for="participant_id" class="field-label">Para qual participante <span class="text-danger">*</span></label>
+                        <label for="participant_id" class="field-label">Para qual {{ mb_strtolower($settings['recipient_term'], 'UTF-8') }} <span class="text-danger">*</span></label>
                         <select name="participant_id" id="participant_id" class="form-select form-select-lg @error('participant_id') is-invalid @enderror">
-                            <option value="">Selecione o participante...</option>
+                            <option value="">Selecione {{ mb_strtolower($settings['recipient_term'], 'UTF-8') }}...</option>
                             @foreach ($participants as $participant)
                                 <option value="{{ $participant->id }}" @selected(old('participant_id') == $participant->id)>
                                     {{ $participant->label }}
@@ -303,8 +383,8 @@
                     </div>
 
                     <div class="col-12">
-                        <label for="message" class="field-label">Depoimento <span class="text-danger">*</span></label>
-                        <textarea name="message" id="message" rows="6" class="form-control @error('message') is-invalid @enderror" placeholder="Escreva sua mensagem de carinho e encorajamento...">{{ old('message') }}</textarea>
+                        <label for="message" class="field-label">Mensagem <span class="text-danger">*</span></label>
+                        <textarea name="message" id="message" rows="6" class="form-control @error('message') is-invalid @enderror" placeholder="Escreva sua mensagem de carinho, gratidão e encorajamento...">{{ old('message') }}</textarea>
                         @error('message') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
@@ -316,7 +396,7 @@
                     </div>
 
                     <div class="col-12 text-center pt-2">
-                        <button type="submit" class="btn btn-submit btn-lg px-5">Enviar Depoimento</button>
+                        <button type="submit" class="btn btn-submit btn-lg px-5">Enviar mensagem</button>
                     </div>
                 </form>
             @endif
@@ -375,7 +455,7 @@
                 itemSelectText: '',
                 shouldSort: false,
                 placeholder: true,
-                placeholderValue: 'Selecione o participante...',
+                placeholderValue: @json('Selecione ' . mb_strtolower($settings['recipient_term'], 'UTF-8') . '...'),
                 searchResultLimit: 50,
                 position: 'bottom',
             });

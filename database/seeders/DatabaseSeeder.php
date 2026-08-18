@@ -3,22 +3,42 @@
 namespace Database\Seeders;
 
 use App\Models\Participant;
+use App\Models\Event;
 use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
+use App\Support\CurrentEvent;
 
 class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->seedSettings();
-        $this->seedDefaultImages();
         $this->seedAdminUser();
-        $this->seedParticipants();
         $this->seedAdditionalAdminUsers();
-        $this->seedTestimonials();
+
+        $events = Event::query()->whereIn('slug', ['vida-vitoriosa', 'edd'])->get()->keyBy('slug');
+
+        foreach ($events as $event) {
+            app(CurrentEvent::class)->set($event);
+            $this->seedSettings();
+            $this->seedDefaultImages();
+
+            if ($event->slug === 'vida-vitoriosa') {
+                $this->seedParticipants();
+                $this->seedTestimonials();
+            } else {
+                $this->seedEddParticipants();
+                $this->seedEddTestimonials();
+            }
+        }
+
+        foreach (User::query()->where('role', 'admin')->get() as $user) {
+            $user->events()->syncWithoutDetaching($events->mapWithKeys(fn (Event $event) => [
+                $event->id => ['role' => 'admin', 'is_active' => true],
+            ])->all());
+        }
     }
 
     private function seedSettings(): void
@@ -30,6 +50,27 @@ class DatabaseSeeder extends Seeder
 
     private function seedDefaultImages(): void
     {
+        $event = app(CurrentEvent::class)->get();
+
+        if ($event->slug === 'edd') {
+            $publicSource = public_path('images/events/edd/edd-public-banner.png');
+            $headerSource = public_path('images/events/edd/edd-pdf-banner.png');
+            $publicTarget = 'events/edd/settings/public-site-default.png';
+            $headerTarget = 'events/edd/settings/pdf-header-default.png';
+
+            if (file_exists($publicSource)) {
+                Storage::disk('public')->put($publicTarget, file_get_contents($publicSource));
+                Setting::put('public_site_image_path', $publicTarget);
+            }
+
+            if (file_exists($headerSource)) {
+                Storage::disk('public')->put($headerTarget, file_get_contents($headerSource));
+                Setting::put('pdf_header_image_path', $headerTarget);
+            }
+
+            return;
+        }
+
         $headerSource = base_path('docs/assets/PDF.png');
         $publicSource = base_path('docs/assets/formulario.png');
 
@@ -45,15 +86,18 @@ class DatabaseSeeder extends Seeder
             return;
         }
 
-        $this->createHeaderCrop($headerSource, Storage::disk('public')->path('settings/pdf-header-default.png'));
+        $headerTarget = 'events/vida-vitoriosa/settings/pdf-header-default.png';
+        $publicTarget = 'events/vida-vitoriosa/settings/public-site-default.png';
+
+        $this->createHeaderCrop($headerSource, Storage::disk('public')->path($headerTarget));
 
         Storage::disk('public')->put(
-            'settings/public-site-default.png',
+            $publicTarget,
             file_get_contents($publicSource)
         );
 
-        Setting::put('pdf_header_image_path', 'settings/pdf-header-default.png');
-        Setting::put('public_site_image_path', 'settings/public-site-default.png');
+        Setting::put('pdf_header_image_path', $headerTarget);
+        Setting::put('public_site_image_path', $publicTarget);
     }
 
     private function seedAdminUser(): void
@@ -251,10 +295,74 @@ class DatabaseSeeder extends Seeder
         }
     }
 
+    private function seedEddParticipants(): void
+    {
+        $participants = [
+            ['name' => 'Daniel Souza', 'display_name' => 'Daniel Souza', 'status' => 'active', 'retreat_edition' => 'EDD 2026'],
+            ['name' => 'Ana Oliveira', 'display_name' => 'Ana Oliveira', 'status' => 'active', 'retreat_edition' => 'EDD 2026'],
+            ['name' => 'Mateus Ribeiro', 'display_name' => 'Mateus Ribeiro', 'status' => 'inactive', 'retreat_edition' => 'EDD 2026'],
+        ];
+
+        foreach ($participants as $participant) {
+            Participant::query()->updateOrCreate(
+                ['name' => $participant['name']],
+                $participant
+            );
+        }
+    }
+
+    private function seedEddTestimonials(): void
+    {
+        $participants = Participant::active()->get()->keyBy('name');
+        $testimonials = [
+            [
+                'participant' => 'Daniel Souza',
+                'sender_name' => 'Pr. André Martins',
+                'phone' => '+55 21 98888-2101',
+                'relationship' => 'Líder',
+                'message' => 'Daniel, sua disposição para servir inspira nossa equipe. Que o EDD fortaleça seu chamado e amplie sua intimidade com Deus.',
+                'status' => 'received',
+            ],
+            [
+                'participant' => 'Ana Oliveira',
+                'sender_name' => 'Renata Alves',
+                'phone' => '+55 21 98888-2102',
+                'relationship' => 'Supervisora',
+                'message' => 'Ana, somos gratos por sua liderança cuidadosa. Que este encontro marque uma nova estação de fé, visão e coragem.',
+                'status' => 'approved',
+            ],
+        ];
+
+        foreach ($testimonials as $testimonial) {
+            $participant = $participants->get($testimonial['participant']);
+
+            if (! $participant) {
+                continue;
+            }
+
+            Testimonial::query()->updateOrCreate(
+                [
+                    'participant_id' => $participant->id,
+                    'sender_name' => $testimonial['sender_name'],
+                    'message' => $testimonial['message'],
+                ],
+                [
+                    'phone' => $testimonial['phone'],
+                    'relationship' => $testimonial['relationship'],
+                    'relationship_other' => null,
+                    'status' => $testimonial['status'],
+                    'is_pdf_generated' => false,
+                    'pdf_generated_at' => null,
+                    'pdf_batch_id' => null,
+                ]
+            );
+        }
+    }
+
     private function seedDemoAsset(): string
     {
         $sourceImage = base_path('ChatGPT Image 25 de mar. de 2026, 15_55_39.png');
-        $targetPath = 'demo/foto-teste.png';
+        $targetPath = 'events/' . app(CurrentEvent::class)->get()->slug . '/demo/foto-teste.png';
 
         if (file_exists($sourceImage)) {
             Storage::disk('public')->put($targetPath, file_get_contents($sourceImage));

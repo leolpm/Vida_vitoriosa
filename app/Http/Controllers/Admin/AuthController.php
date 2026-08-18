@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Services\LoginCodeService;
+use App\Support\CurrentEvent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,7 +13,10 @@ use Illuminate\View\View;
 
 class AuthController extends Controller
 {
-    public function __construct(private readonly LoginCodeService $loginCodeService)
+    public function __construct(
+        private readonly LoginCodeService $loginCodeService,
+        private readonly CurrentEvent $currentEvent,
+    )
     {
     }
 
@@ -39,9 +43,16 @@ class AuthController extends Controller
                 ->with('error', 'Nenhum usuário administrativo ativo foi encontrado com este e-mail.');
         }
 
+        if (! $user->canAccessEvent($this->currentEvent->get())) {
+            return back()
+                ->withInput()
+                ->with('error', 'Este usuário não possui acesso administrativo a este evento.');
+        }
+
         $this->loginCodeService->send($user);
 
         $request->session()->put('admin_login_email', $user->email);
+        $request->session()->put('admin_login_event_id', $this->currentEvent->id());
 
         return redirect()
             ->route('admin.login.verify')
@@ -78,9 +89,14 @@ class AuthController extends Controller
                 ->with('error', 'Código inválido ou expirado.');
         }
 
+        if (! $user->canAccessEvent($this->currentEvent->get())) {
+            return back()->with('error', 'Este usuário não possui acesso administrativo a este evento.');
+        }
+
         Auth::login($user);
         $request->session()->regenerate();
         $request->session()->forget('admin_login_email');
+        $request->session()->forget('admin_login_event_id');
         $this->loginCodeService->clear($user);
 
         return redirect()

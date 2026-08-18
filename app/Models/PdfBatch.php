@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\BelongsToEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,9 +10,10 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class PdfBatch extends Model
 {
-    use HasFactory;
+    use BelongsToEvent, HasFactory;
 
     protected $fillable = [
+        'event_id',
         'participant_id',
         'generation_mode',
         'generated_by',

@@ -26,6 +26,7 @@ Use este diretorio para roadmap, backlog e planejamento funcional.
 - `planejamento_fluxo_impressao.md`: fonte funcional e arquitetural do Fluxo de Impressao
 - `roadmap_fluxo_impressao.md`: sequenciamento da implementacao do Fluxo de Impressao
 - `planejamento_versoes.md`: politica de tags, branches e ordem das versoes
+- `checkpoint_v2_multi_eventos.md`: estado exato da implementacao parcial da v2.0.0 e instrucoes de retomada
 
 ## Ordem entre os planejamentos
 
@@ -39,3 +40,4 @@ Use este diretorio para roadmap, backlog e planejamento funcional.
 |---|---|---|
 | 2026-08-18 | Inclusao do planejamento multi-evento e da ordem de execucao entre os documentos | Evitar inicio do Fluxo de Impressao antes da fundacao por eventos e dominios |
 | 2026-08-18 | Inclusao da governanca de versoes | Congelar a v1.0.0 e separar as implementacoes v2.0.0 e v3.0.0 |
+| 2026-08-18 | Inclusao do checkpoint da implementacao v2.0.0 | Registrar o ponto seguro de interrupcao e as pendencias para retomada |
