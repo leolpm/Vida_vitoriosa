@@ -30,8 +30,8 @@ class DatabaseSeeder extends Seeder
 
     private function seedDefaultImages(): void
     {
-        $headerSource = base_path('doc/PDF.png');
-        $publicSource = base_path('doc/formulario.png');
+        $headerSource = base_path('docs/assets/PDF.png');
+        $publicSource = base_path('docs/assets/formulario.png');
 
         if (! file_exists($headerSource)) {
             $headerSource = base_path('ChatGPT Image 25 de mar. de 2026, 15_55_39.png');

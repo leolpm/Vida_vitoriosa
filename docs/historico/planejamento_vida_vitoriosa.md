@@ -1,5 +1,9 @@
 # Planejamento do Sistema — Vida Vitoriosa
 
+> Status: historico
+> Substituido por: `docs/planejamento/planejamento_fluxo_impressao.md`
+> Fonte anterior: planejamento baseado em geracao de PDF
+
 ## 1. Contexto
 
 A igreja realiza o retiro **Vida Vitoriosa** e, ao final, cada participante recebe depoimentos enviados por parentes, amigos e pessoas próximas.  
@@ -745,3 +749,11 @@ Atualize a solução para incluir Bootstrap, login administrativo por e-mail com
 
 Este planejamento já considera a decisão visual aprovada para o PDF:  
 **manter o modelo emocional, com cabeçalho baseado na arte do retiro e uma página por depoimento.**
+
+---
+
+## 27. Historico de alteracoes
+
+| Data | Alteracao | Motivo |
+|---|---|---|
+| 2026-08-18 | Documento marcado como historico e movido para `docs/historico/` | Preservar o planejamento original da v1.0.0 sem trata-lo como fonte ativa |
