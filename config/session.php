@@ -156,7 +156,11 @@ return [
     |
     */
 
-    'domain' => env('SESSION_DOMAIN'),
+    'domain' => env('SESSION_DOMAIN') ?: (
+        env('APP_ENV') === 'production'
+            ? '.atitudelaranja.com'
+            : '.atitudelaranja.test'
+    ),
 
     /*
     |--------------------------------------------------------------------------

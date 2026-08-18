@@ -85,7 +85,7 @@ class ReportsTest extends TestCase
             'participants_filter' => 'all',
         ]));
 
-        $response->assertDownload('relatorio_participantes.xlsx');
+        $response->assertDownload('relatorio_participantes_vida-vitoriosa.xlsx');
         $this->assertDatabaseHas('participants', ['id' => $participant->id]);
     }
 
@@ -153,6 +153,6 @@ class ReportsTest extends TestCase
             'generated' => 'all',
         ]));
 
-        $response->assertDownload('relatorio_depoimentos.xlsx');
+        $response->assertDownload('relatorio_depoimentos_vida-vitoriosa.xlsx');
     }
 }

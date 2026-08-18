@@ -294,7 +294,7 @@
         }
 
         .event-edd .paper-banner img {
-            object-position: 47% center;
+            object-position: 40% center;
         }
     }
 </style>
@@ -419,6 +419,10 @@
         let participantChoices = null;
 
         const toggle = () => {
+            if (!relationship || !wrapper) {
+                return;
+            }
+
             wrapper.style.display = relationship.value === 'Outro' ? '' : 'none';
         };
 

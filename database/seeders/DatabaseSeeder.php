@@ -2,14 +2,14 @@
 
 namespace Database\Seeders;
 
-use App\Models\Participant;
 use App\Models\Event;
+use App\Models\Participant;
 use App\Models\Setting;
 use App\Models\Testimonial;
 use App\Models\User;
+use App\Support\CurrentEvent;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Storage;
-use App\Support\CurrentEvent;
 
 class DatabaseSeeder extends Seeder
 {
@@ -362,7 +362,7 @@ class DatabaseSeeder extends Seeder
     private function seedDemoAsset(): string
     {
         $sourceImage = base_path('ChatGPT Image 25 de mar. de 2026, 15_55_39.png');
-        $targetPath = 'events/' . app(CurrentEvent::class)->get()->slug . '/demo/foto-teste.png';
+        $targetPath = 'events/'.app(CurrentEvent::class)->get()->slug.'/demo/foto-teste.png';
 
         if (file_exists($sourceImage)) {
             Storage::disk('public')->put($targetPath, file_get_contents($sourceImage));
@@ -379,10 +379,17 @@ class DatabaseSeeder extends Seeder
             mkdir($directory, 0777, true);
         }
 
+        if (! extension_loaded('gd')) {
+            copy($sourceImage, $destinationPath);
+
+            return;
+        }
+
         $info = getimagesize($sourceImage);
 
         if (! $info) {
             copy($sourceImage, $destinationPath);
+
             return;
         }
 
@@ -397,6 +404,7 @@ class DatabaseSeeder extends Seeder
 
         if (! $source) {
             copy($sourceImage, $destinationPath);
+
             return;
         }
 

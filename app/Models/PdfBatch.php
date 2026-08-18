@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use LogicException;
 
 class PdfBatch extends Model
 {
@@ -26,6 +27,23 @@ class PdfBatch extends Model
         return [
             'generated_at' => 'datetime',
         ];
+    }
+
+    protected static function booted(): void
+    {
+        static::saving(function (PdfBatch $batch): void {
+            if (! $batch->participant_id || ! $batch->event_id) {
+                return;
+            }
+
+            $participantEventId = Participant::withoutGlobalScopes()
+                ->whereKey($batch->participant_id)
+                ->value('event_id');
+
+            if ((int) $participantEventId !== (int) $batch->event_id) {
+                throw new LogicException('O lote PDF e o participante devem pertencer ao mesmo evento.');
+            }
+        });
     }
 
     public function participant(): BelongsTo

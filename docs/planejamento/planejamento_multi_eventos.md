@@ -1,10 +1,11 @@
 # Planejamento do Sistema - Arquitetura Multi-evento
 
-> Status: ativo
+> Status: concluido na branch `codex/v2-multi-eventos`
 > Tipo: planejamento funcional, arquitetural e de testes
 > Ordem de execucao: implementar antes do Fluxo de Impressao
 > Planejamento dependente: `docs/planejamento/planejamento_fluxo_impressao.md`
 > Dependencia visual: `docs/ui-standards.md`
+> Documentacao canonica implementada: `docs/modulos/multi-eventos.md`
 
 ## 1. Contexto
 
@@ -1142,3 +1143,4 @@ Nenhuma tabela futura do Fluxo de Impressao deve criar uma segunda forma de iden
 | Data | Alteracao | Motivo |
 |---|---|---|
 | 2026-08-18 | Criacao do planejamento multi-evento com arquitetura por dominio, migracao, seguranca, ambiente local, testes automatizados e validacao visual no navegador | Consolidar a implementacao do Vida Vitoriosa e EDD antes do desenvolvimento do Fluxo de Impressao |
+| 2026-08-18 | Planejamento marcado como concluido e vinculado a documentacao canonica | Registrar que o escopo foi implementado e validado antes do Fluxo de Impressao |

@@ -38,7 +38,7 @@ class SystemResetTest extends TestCase
             'generation_mode' => 'only_new:approved',
             'generated_by' => $admin->id,
             'generated_at' => now(),
-            'file_path' => 'pdf/participant-3/ana.pdf',
+            'file_path' => 'events/vida-vitoriosa/pdf/participant-3/ana.pdf',
         ]);
 
         Testimonial::create([
@@ -47,7 +47,7 @@ class SystemResetTest extends TestCase
             'phone' => '+5511999999999',
             'relationship' => 'Amigo',
             'message' => 'Mensagem de teste',
-            'photo_path' => 'testimonials/foto-teste.jpg',
+            'photo_path' => 'events/vida-vitoriosa/testimonials/foto-teste.jpg',
             'photo_original_name' => 'foto-teste.jpg',
             'photo_size' => 1024,
             'pdf_batch_id' => $batch->id,
@@ -56,29 +56,46 @@ class SystemResetTest extends TestCase
             'pdf_generated_at' => now(),
         ]);
 
-        Storage::disk('public')->put('testimonials/foto-teste.jpg', 'image');
-        Storage::disk('public')->put('pdf/participant-3/ana.pdf', 'pdf');
-        Storage::disk('public')->put('tmp/test-batch-1.pdf', 'tmp');
-        Storage::disk('local')->put('pdf-temp/tmp-image.png', 'tmp');
-        Storage::disk('local')->put('pdf-emojis/emoji.png', 'emoji');
+        Storage::disk('public')->put('events/vida-vitoriosa/testimonials/foto-teste.jpg', 'image');
+        Storage::disk('public')->put('events/vida-vitoriosa/pdf/participant-3/ana.pdf', 'pdf');
+
+        $edd = $this->useEvent('edd');
+        $eddParticipant = Participant::create([
+            'name' => 'Daniel Souza',
+            'status' => 'active',
+            'retreat_edition' => 'EDD 2026',
+        ]);
+        $eddTestimonial = Testimonial::create([
+            'participant_id' => $eddParticipant->id,
+            'sender_name' => 'Líder EDD',
+            'phone' => '+5521999999999',
+            'relationship' => 'Líder',
+            'message' => 'Mensagem preservada',
+            'photo_path' => 'events/edd/testimonials/preservar.jpg',
+            'status' => 'approved',
+        ]);
+        Storage::disk('public')->put('events/edd/testimonials/preservar.jpg', 'image');
+
+        $this->useEvent('vida-vitoriosa');
 
         $this->actingAs($admin);
 
         $response = $this->post(route('admin.settings.reset'), [
-            'confirmation' => 'RESETAR',
+            'confirmation' => 'RESETAR VIDA VITORIOSA',
         ]);
 
         $response->assertRedirect(route('admin.settings.index'));
         $response->assertSessionHas('success');
 
-        $this->assertDatabaseCount('participants', 0);
-        $this->assertDatabaseCount('testimonials', 0);
+        $this->assertDatabaseMissing('participants', ['id' => $participant->id]);
+        $this->assertDatabaseMissing('testimonials', ['sender_name' => 'Leonardo']);
         $this->assertDatabaseCount('pdf_batches', 0);
 
-        Storage::disk('public')->assertMissing('testimonials/foto-teste.jpg');
-        Storage::disk('public')->assertMissing('pdf/participant-3/ana.pdf');
-        Storage::disk('public')->assertMissing('tmp/test-batch-1.pdf');
-        Storage::disk('local')->assertMissing('pdf-temp/tmp-image.png');
-        Storage::disk('local')->assertMissing('pdf-emojis/emoji.png');
+        $this->assertDatabaseHas('participants', ['id' => $eddParticipant->id, 'event_id' => $edd->id]);
+        $this->assertDatabaseHas('testimonials', ['id' => $eddTestimonial->id, 'event_id' => $edd->id]);
+
+        Storage::disk('public')->assertMissing('events/vida-vitoriosa/testimonials/foto-teste.jpg');
+        Storage::disk('public')->assertMissing('events/vida-vitoriosa/pdf/participant-3/ana.pdf');
+        Storage::disk('public')->assertExists('events/edd/testimonials/preservar.jpg');
     }
 }

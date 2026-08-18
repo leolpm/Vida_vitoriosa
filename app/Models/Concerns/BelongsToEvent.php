@@ -6,6 +6,7 @@ use App\Models\Event;
 use App\Support\CurrentEvent;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use LogicException;
 
 trait BelongsToEvent
 {
@@ -19,7 +20,7 @@ trait BelongsToEvent
             }
         });
 
-        static::creating(function ($model): void {
+        static::saving(function ($model): void {
             if ($model->event_id !== null) {
                 return;
             }
@@ -28,7 +29,11 @@ trait BelongsToEvent
 
             if ($context->has()) {
                 $model->event_id = $context->id();
+
+                return;
             }
+
+            throw new LogicException('Um contexto de evento é obrigatório para criar '.class_basename($model).'.');
         });
     }
 

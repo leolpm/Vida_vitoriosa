@@ -115,10 +115,25 @@
             .site-navbar .navbar-brand {
                 justify-content: center;
                 text-align: center;
+                flex-direction: column;
+                width: 100%;
+                white-space: normal;
+                gap: .5rem !important;
+            }
+
+            .site-navbar .navbar-brand > span:last-child {
+                display: block;
+                max-width: 100%;
+            }
+
+            .site-navbar .navbar-brand small {
+                display: block;
+                line-height: 1.45;
             }
 
             .site-navbar .navbar-actions {
                 justify-content: center;
+                width: 100%;
             }
 
             .site-navbar .navbar-actions .btn,

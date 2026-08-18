@@ -6,7 +6,7 @@ use App\Models\Concerns\BelongsToEvent;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
+use LogicException;
 
 class Testimonial extends Model
 {
@@ -44,6 +44,35 @@ class Testimonial extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::saving(function (Testimonial $testimonial): void {
+            if (! $testimonial->participant_id || ! $testimonial->event_id) {
+                return;
+            }
+
+            $participantEventId = Participant::withoutGlobalScopes()
+                ->whereKey($testimonial->participant_id)
+                ->value('event_id');
+
+            if ((int) $participantEventId !== (int) $testimonial->event_id) {
+                throw new LogicException('O depoimento e o participante devem pertencer ao mesmo evento.');
+            }
+
+            if (! $testimonial->pdf_batch_id) {
+                return;
+            }
+
+            $batchEventId = PdfBatch::withoutGlobalScopes()
+                ->whereKey($testimonial->pdf_batch_id)
+                ->value('event_id');
+
+            if ((int) $batchEventId !== (int) $testimonial->event_id) {
+                throw new LogicException('O depoimento e o lote PDF devem pertencer ao mesmo evento.');
+            }
+        });
+    }
+
     public function participant(): BelongsTo
     {
         return $this->belongsTo(Participant::class);
@@ -56,7 +85,7 @@ class Testimonial extends Model
 
     public function getPhotoUrlAttribute(): ?string
     {
-        return $this->photo_path ? '/storage/' . ltrim($this->photo_path, '/') : null;
+        return $this->photo_path ? '/storage/'.ltrim($this->photo_path, '/') : null;
     }
 
     public function getStatusLabelAttribute(): string

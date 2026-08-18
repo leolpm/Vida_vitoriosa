@@ -40,7 +40,7 @@ v2.0.0
 | Versao | Estado | Escopo |
 |---|---|---|
 | `v1.0.0` | Estavel e congelada | Sistema atual do Vida Vitoriosa em modo monoevento |
-| `v2.0.0` | Proxima implementacao | Arquitetura multi-evento, subdominios e formulario EDD |
+| `v2.0.0` | Implementada e validada na branch | Arquitetura multi-evento, subdominios e formulario EDD |
 | `v3.0.0` | Planejada | Fluxo de Impressao multi-evento |
 
 ## 3.1 Versao 1.0.0 - Vida Vitoriosa
@@ -209,3 +209,4 @@ Nao devem ser feitas alteracoes diretamente enquanto o repositorio estiver em es
 | Data | Alteracao | Motivo |
 |---|---|---|
 | 2026-08-18 | Criacao da politica de versoes com congelamento da v1.0.0, multi-evento na v2.0.0 e Fluxo de Impressao na v3.0.0 | Preservar a versao atual e evitar mistura entre implementacoes estruturais |
+| 2026-08-18 | Atualizacao da v2.0.0 para implementada e validada na branch | Diferenciar conclusao tecnica da criacao da tag de release |

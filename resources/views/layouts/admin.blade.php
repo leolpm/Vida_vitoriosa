@@ -188,24 +188,14 @@
                 </div>
             </div>
             <div class="d-flex gap-2 align-items-center">
-                @php
-                    $eventLinks = \App\Models\Event::active()
-                        ->whereKeyNot($currentEvent->id)
-                        ->get()
-                        ->filter(fn ($event) => auth()->user()?->canAccessEvent($event))
-                        ->mapWithKeys(fn ($event) => [
-                            $event->id => app(\App\Services\EventUrlGenerator::class)->forEvent($event),
-                        ])
-                        ->filter();
-                @endphp
-                @if ($eventLinks->isNotEmpty())
+                @if ($eventSwitchLinks->isNotEmpty())
                     <div class="dropdown">
                         <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-calendar-event me-1"></i>{{ $currentEvent->name }}
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end">
-                            @foreach ($eventLinks as $eventId => $eventUrl)
-                                <li><a class="dropdown-item" href="{{ $eventUrl }}">Ir para {{ \App\Models\Event::find($eventId)?->name }}</a></li>
+                            @foreach ($eventSwitchLinks as $eventLink)
+                                <li><a class="dropdown-item" href="{{ $eventLink['url'] }}">Ir para {{ $eventLink['name'] }}</a></li>
                             @endforeach
                         </ul>
                     </div>

@@ -19,6 +19,8 @@
 /storage/*.key
 /storage/pail
 /tmp/
+/output/
+/.playwright-cli/
 /vendor
 Homestead.json
 Homestead.yaml

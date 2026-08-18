@@ -32,9 +32,14 @@ Este diretorio concentra planejamento, backlog, roadmap e documentos de decisao 
 - `docs/ui-standards.md`: referencia visual compartilhada
 - `docs/modulos/template-modulo.md`: estrutura canonica para documentacao de modulos
 
+### Modulos implementados
+
+- `docs/modulos/multi-eventos.md`: arquitetura por dominio, isolamento, EDD e operacao da v2.0.0
+
 ## Historico de alteracoes
 
 | Data | Alteracao | Motivo |
 |---|---|---|
 | 2026-08-18 | Inclusao do indice de planejamentos ativos e referencias compartilhadas | Facilitar a navegacao e registrar o planejamento multi-evento como fonte ativa |
 | 2026-08-18 | Inclusao do planejamento de versoes | Preservar a v1.0.0 antes da implementacao multi-evento |
+| 2026-08-18 | Inclusao da documentacao canonica de multi-eventos | Registrar o comportamento efetivamente implementado na v2.0.0 |
