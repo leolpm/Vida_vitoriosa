@@ -379,6 +379,57 @@ A listagem administrativa deve manter os filtros atuais e acrescentar:
 
 Os filtros devem preservar o evento atual e funcionar em conjunto com participante, membro, tipo, status e vencimento.
 
+## 10.1 Filtro multisselecao de status
+
+O filtro de status deve permanecer sempre visivel na barra de filtros da tela `Fluxo de Impressao` e permitir selecionar um ou varios status ao mesmo tempo.
+
+Status disponiveis inicialmente:
+
+- distribuido
+- em revisao
+- pronto para impressao
+- imprimindo
+- concluido
+- cancelado
+
+A lista de opcoes deve ser gerada pelos status oficiais do fluxo, evitando manter uma segunda lista manual na interface.
+
+### Comportamento
+
+- nenhum status selecionado equivale a `Todos os status`
+- selecionar um status mostra somente tarefas naquele status
+- selecionar varios status usa a regra `OU` entre os status escolhidos
+- os demais filtros usam a regra `E` em relacao ao conjunto de status
+- a opcao `Todos os status` limpa as selecoes individuais
+- o botao `Limpar filtros` tambem remove todos os status selecionados
+- as selecoes permanecem na URL e durante a navegacao pela paginacao
+- o evento atual continua sendo aplicado obrigatoriamente, independentemente dos status escolhidos
+
+Exemplo:
+
+```text
+Participante: Ana Oliveira
+Status: Em revisao + Pronto para impressao
+```
+
+Resultado: tarefas de Ana Oliveira que estejam `Em revisao` ou `Pronto para impressao`.
+
+### Apresentacao visual
+
+Usar um dropdown no padrao Bootstrap com checkboxes, em vez do `select multiple` nativo, para manter boa usabilidade em desktop e celular.
+
+O acionador deve resumir a selecao:
+
+```text
+Todos os status
+Em revisao
+2 status selecionados
+```
+
+Ao abrir o dropdown, cada opcao deve apresentar checkbox e rotulo em portugues. Abaixo ou ao lado do filtro, chips removiveis podem mostrar os status ativos quando houver mais de uma selecao.
+
+O componente deve permitir uso por teclado, indicar foco e manter os atributos de acessibilidade esperados para dropdown e checkboxes.
+
 ---
 
 ## 11. Testes automatizados
@@ -409,6 +460,16 @@ Os filtros devem preservar o evento atual e funcionar em conjunto com participan
 - membro no limite nao aparece nas opcoes e tambem e rejeitado pelo backend
 - distribuicoes concorrentes nao duplicam a mesma carta
 
+### Filtros da listagem
+
+- nenhum status selecionado retorna todos os status do evento atual
+- um status selecionado restringe corretamente a listagem
+- dois ou mais status usam `whereIn` e retornam a uniao dos status selecionados
+- status combinados com participante, membro, tipo e vencimento aplicam a regra `E`
+- valores de status inexistentes sao rejeitados ou ignorados de forma segura, sem alterar o evento atual
+- paginacao preserva todos os status selecionados
+- limpar filtros remove o conjunto de status da URL
+
 ### Compartilhamento
 
 - distribuicao redireciona para a pagina exclusiva
@@ -430,6 +491,9 @@ Validar nos dominios locais do Vida Vitoriosa e do EDD:
 - marcacoes de carta nao revisada, reprovada, em reavaliacao, reavaliada e aprovada
 - contador e historico de revisores
 - filtro de membros e estado sem membros disponiveis
+- filtro de status com uma selecao e com varias selecoes
+- resumo, checkboxes e chips do filtro de status no desktop e no celular
+- preservacao dos status ao paginar e ao combinar outros filtros
 - pagina de compartilhamento
 - botao de copiar
 - abertura do WhatsApp Web com texto correto
@@ -446,6 +510,8 @@ Os testes devem confirmar ausencia de mistura entre os eventos e ausencia de err
 - o administrador escolhe individualmente as cartas do fluxo
 - membros no limite nao podem ser selecionados
 - os tres cartoes exibem contagens coerentes com as mesmas regras da distribuicao
+- o filtro de status permite uma ou varias selecoes e combina corretamente com os demais filtros
+- a interface deixa evidente quais status estao selecionados e permite remove-los individualmente
 - cartas ja reavaliadas ficam identificadas e fora da contagem automatica
 - cartas ainda reprovadas podem ser enviadas manualmente para nova reavaliacao
 - o sistema informa quantas revisoes ocorreram e quem realizou cada uma
@@ -474,3 +540,4 @@ Os testes devem confirmar ausencia de mistura entre os eventos e ausencia de err
 | Data | Alteracao | Motivo |
 |---|---|---|
 | 2026-08-18 | Criacao do planejamento evolutivo da distribuicao, cartoes operacionais, fila automatica e manual de reavaliacao, contadores e historico de revisores | Consolidar as melhorias solicitadas sem confundir o comportamento futuro com o modulo ja implementado |
+| 2026-08-18 | Inclusao do filtro multisselecao de status na listagem de fluxos | Permitir que o administrador combine um ou varios estados das tarefas com os demais filtros de gestao |
