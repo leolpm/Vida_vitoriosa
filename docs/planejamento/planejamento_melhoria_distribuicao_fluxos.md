@@ -1,6 +1,6 @@
 # Planejamento da Melhoria de Distribuicao e Revisao dos Fluxos
 
-> Status: ativo e aguardando implementacao
+> Status: implementado localmente; homologacao e implantacao pendentes
 > Tipo: evolucao funcional do Fluxo de Impressao
 > Fonte canonica relacionada: `docs/modulos/fluxo-impressao.md`
 > Planejamento-base: `docs/planejamento/planejamento_fluxo_impressao.md`
@@ -541,3 +541,4 @@ Os testes devem confirmar ausencia de mistura entre os eventos e ausencia de err
 |---|---|---|
 | 2026-08-18 | Criacao do planejamento evolutivo da distribuicao, cartoes operacionais, fila automatica e manual de reavaliacao, contadores e historico de revisores | Consolidar as melhorias solicitadas sem confundir o comportamento futuro com o modulo ja implementado |
 | 2026-08-18 | Inclusao do filtro multisselecao de status na listagem de fluxos | Permitir que o administrador combine um ou varios estados das tarefas com os demais filtros de gestao |
+| 2026-08-18 | Implementacao local do escopo planejado com testes automatizados e validacao visual nos dois eventos | Registrar a conclusao tecnica sem declarar homologacao, release ou implantacao em producao |

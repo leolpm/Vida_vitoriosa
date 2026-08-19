@@ -27,15 +27,37 @@
 @if($step === 'review')
     <div class="d-grid gap-4">
         @foreach($flow->testimonials as $testimonial)
-            @php($review = $latestReviews->get($testimonial->id))
+            @php
+                $review = $latestReviews->get($testimonial->id);
+                $history = $reviewHistory->get($testimonial->id, collect());
+                $previousHistory = $history->where('print_flow_id', '!=', $flow->id);
+                $reevaluationCount = $previousHistory->filter(fn ($item) => $item->printFlow?->type === 'reevaluation')->count();
+            @endphp
             <article class="flow-card">
                 <div class="row g-4">
                     <div class="{{ $testimonial->photo_url ? 'col-12 col-lg-8' : 'col-12' }}">
                         <div class="d-flex justify-content-between align-items-start gap-3 mb-3">
                             <div><div class="flow-eyebrow">Carta de</div><h2 class="h5 mb-0">{{ $testimonial->sender_name }}</h2><div class="small text-secondary">{{ $testimonial->relationship === 'Outro' ? $testimonial->relationship_other : $testimonial->relationship }}</div></div>
-                            @if($review)<span class="badge {{ $review->decision === 'approved' ? 'text-bg-success' : 'text-bg-danger' }}">{{ $review->decision === 'approved' ? 'Aprovada' : 'Reprovada' }}</span>@endif
+                            <div class="d-flex flex-wrap gap-2 justify-content-end">
+                                @if($review)<span class="badge {{ $review->decision === 'approved' ? 'text-bg-success' : 'text-bg-danger' }}">{{ $review->decision === 'approved' ? 'Aprovada' : 'Reprovada' }}</span>@endif
+                                @if($reevaluationCount > 0)<span class="badge text-bg-warning">Já reavaliada {{ $reevaluationCount }} vez(es)</span>@elseif($previousHistory->isNotEmpty())<span class="badge text-bg-secondary">Reprovada · aguardando reavaliação</span>@endif
+                            </div>
                         </div>
                         <div class="p-3 rounded-4 bg-light" style="white-space:pre-wrap">{{ $testimonial->message }}</div>
+                        @if($previousHistory->isNotEmpty())
+                            <details class="mt-3 border rounded-4 p-3 bg-light">
+                                <summary class="fw-semibold">Histórico anterior · {{ $previousHistory->count() }} revisão(ões)</summary>
+                                <div class="d-grid gap-2 mt-3">
+                                    @foreach($previousHistory as $historyItem)
+                                        <div class="border-bottom pb-2">
+                                            <div class="fw-semibold">{{ $historyItem->decision === 'approved' ? 'Aprovada' : 'Reprovada' }} por {{ $historyItem->teamMember?->name ?? 'Membro não identificado' }}</div>
+                                            <div class="small text-secondary">{{ $historyItem->printFlow?->type_label ?? 'Fluxo não identificado' }} · {{ $historyItem->decided_at->format('d/m/Y H:i') }}</div>
+                                            @if($historyItem->rejection_reason)<div class="small mt-1">Motivo: {{ $historyItem->rejection_reason }}</div>@endif
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </details>
+                        @endif
                     </div>
                     @if($testimonial->photo_url)
                         <div class="col-12 col-lg-4"><img src="{{ $testimonial->photo_url }}" class="img-fluid rounded-4 border w-100" style="max-height:420px;object-fit:contain" alt="Foto enviada por {{ $testimonial->sender_name }}"></div>

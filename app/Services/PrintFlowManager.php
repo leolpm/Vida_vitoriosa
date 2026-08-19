@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Participant;
 use App\Models\PrintFlow;
 use App\Models\PrintFlowAudit;
 use App\Models\Setting;
@@ -9,7 +10,6 @@ use App\Models\TeamMember;
 use App\Models\Testimonial;
 use App\Support\CurrentEvent;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -19,39 +19,73 @@ class PrintFlowManager
     public function __construct(
         private readonly CurrentEvent $currentEvent,
         private readonly EventUrlGenerator $urlGenerator,
+        private readonly PrintFlowCandidateService $candidates,
     ) {}
 
     public function distribute(array $data, int $userId, Request $request): array
     {
-        $member = TeamMember::query()->findOrFail($data['team_member_id']);
+        return DB::transaction(function () use ($data, $userId, $request): array {
+            $participant = Participant::active()
+                ->whereKey($data['participant_id'])
+                ->lockForUpdate()
+                ->first();
 
-        if (! $member->isAuthorizedFor($this->currentEvent->get())) {
-            throw ValidationException::withMessages([
-                'team_member_id' => 'Este membro não está autorizado a atuar neste evento.',
-            ]);
-        }
+            if (! $participant) {
+                throw ValidationException::withMessages([
+                    'participant_id' => 'O participante selecionado não está disponível neste evento.',
+                ]);
+            }
 
-        $limit = $member->task_limit ?: (int) Setting::valueFor('print_flow_global_task_limit', 3);
+            $member = TeamMember::query()->whereKey($data['team_member_id'])->lockForUpdate()->firstOrFail();
+            $this->validateMember($member);
 
-        if ($member->openTasksCount() >= $limit) {
-            throw ValidationException::withMessages([
-                'team_member_id' => "Este membro já atingiu o limite global de {$limit} tarefa(s) aberta(s).",
-            ]);
-        }
+            $testimonials = collect();
+            $includeReevaluated = (bool) ($data['include_reevaluated'] ?? false);
 
-        $testimonials = $this->testimonialsFor($data['participant_id'], $data['type']);
+            if ($data['type'] === 'testimonial_search') {
+                if (! empty($data['testimonial_ids'])) {
+                    throw ValidationException::withMessages([
+                        'testimonial_ids' => 'A busca de depoimentos não permite selecionar cartas.',
+                    ]);
+                }
 
-        if ($data['type'] !== 'testimonial_search' && $testimonials->isEmpty()) {
-            throw ValidationException::withMessages([
-                'participant_id' => $data['type'] === 'reevaluation'
-                    ? 'Este participante não possui cartas reprovadas disponíveis para reavaliação.'
-                    : 'Este participante não possui depoimentos disponíveis para revisão.',
-            ]);
-        }
+                if (! $this->candidates->searchParticipantIsEligible($participant)) {
+                    throw ValidationException::withMessages([
+                        'participant_id' => 'Este participante não está disponível para uma nova tarefa de busca.',
+                    ]);
+                }
+            } else {
+                $selectedIds = collect($data['testimonial_ids'] ?? [])
+                    ->map(fn ($id): int => (int) $id)
+                    ->filter()
+                    ->unique()
+                    ->values();
 
-        return DB::transaction(function () use ($data, $userId, $request, $testimonials, $member): array {
+                if ($selectedIds->isEmpty()) {
+                    throw ValidationException::withMessages([
+                        'testimonial_ids' => 'Selecione pelo menos uma carta para distribuir a tarefa.',
+                    ]);
+                }
+
+                $testimonials = Testimonial::query()
+                    ->where('participant_id', $participant->id)
+                    ->whereIn('id', $selectedIds)
+                    ->lockForUpdate()
+                    ->get();
+
+                $allEligible = $testimonials->count() === $selectedIds->count()
+                    && $testimonials->every(fn (Testimonial $testimonial): bool => $this->candidates
+                        ->testimonialIsEligible($testimonial, $data['type'], $includeReevaluated));
+
+                if (! $allEligible) {
+                    throw ValidationException::withMessages([
+                        'testimonial_ids' => 'Uma ou mais cartas selecionadas não estão mais disponíveis para esta tarefa.',
+                    ]);
+                }
+            }
+
             $flow = PrintFlow::create([
-                'participant_id' => $data['participant_id'],
+                'participant_id' => $participant->id,
                 'team_member_id' => $member->id,
                 'type' => $data['type'],
                 'status' => 'distributed',
@@ -70,15 +104,20 @@ class PrintFlowManager
             $this->audit($flow, 'admin', $userId, 'flow_distributed', null, [
                 'type' => $flow->type,
                 'team_member_id' => $member->id,
+                'testimonial_ids' => $testimonials->pluck('id')->values()->all(),
                 'token_id' => $token->id,
             ], $request);
 
             $url = $this->urlGenerator->forEvent($this->currentEvent->get(), '/fluxos/'.$plainToken);
 
+            $flow->load(['participant', 'teamMember', 'event']);
+
             return [
                 'flow' => $flow,
                 'access_url' => $url,
                 'whatsapp_url' => $this->whatsappUrl($member, $flow, $url),
+                'expires_at' => $token->expires_at,
+                'max_accesses' => $token->max_accesses,
             ];
         });
     }
@@ -98,6 +137,8 @@ class PrintFlowManager
             return [
                 'access_url' => $url,
                 'whatsapp_url' => $this->whatsappUrl($flow->teamMember, $flow, $url),
+                'expires_at' => $token->expires_at,
+                'max_accesses' => $token->max_accesses,
             ];
         });
     }
@@ -140,32 +181,27 @@ class PrintFlowManager
         return [$token, $plainToken];
     }
 
-    private function testimonialsFor(int $participantId, string $type): Collection
+    private function validateMember(TeamMember $member): void
     {
-        if ($type === 'testimonial_search') {
-            return collect();
+        if (! $member->isAuthorizedFor($this->currentEvent->get())) {
+            throw ValidationException::withMessages([
+                'team_member_id' => 'Este membro não está autorizado a atuar neste evento.',
+            ]);
         }
 
-        $query = Testimonial::query()
-            ->where('participant_id', $participantId)
-            ->where('status', '!=', 'archived')
-            ->orderBy('created_at');
+        $limit = $member->task_limit ?: max(1, (int) Setting::valueFor('print_flow_global_task_limit', 3));
 
-        if ($type === 'reevaluation') {
-            $query->whereIn('id', DB::table('print_flow_reviews as reviews')
-                ->select('reviews.testimonial_id')
-                ->where('reviews.event_id', $this->currentEvent->id())
-                ->where('reviews.decision', 'rejected')
-                ->whereRaw('reviews.id = (select max(latest.id) from print_flow_reviews latest where latest.testimonial_id = reviews.testimonial_id)'));
+        if ($member->openTasksCount() >= $limit) {
+            throw ValidationException::withMessages([
+                'team_member_id' => "Este membro já atingiu o limite global de {$limit} tarefa(s) aberta(s).",
+            ]);
         }
-
-        return $query->get();
     }
 
     private function whatsappUrl(TeamMember $member, PrintFlow $flow, ?string $url): string
     {
         $phone = preg_replace('/\D+/', '', $member->phone) ?? '';
-        $message = "Olá, {$member->name}! Você recebeu uma tarefa do Fluxo de Impressão para {$flow->participant->label}. Acesse: {$url}";
+        $message = "Olá, {$member->name}! Você recebeu uma tarefa de {$flow->type_label} para {$flow->participant->label} no evento {$flow->event->name}. Acesse o link temporário: {$url}";
 
         return 'https://wa.me/'.$phone.'?text='.rawurlencode($message);
     }

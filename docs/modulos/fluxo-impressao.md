@@ -10,19 +10,26 @@ O PDF legado permanece disponivel no menu como `PDFs legados` ate a validacao e 
 
 ### Impressao principal
 
-1. o administrador seleciona um participante e um membro autorizado no evento atual
-2. o sistema valida a carga global do membro
-3. o sistema associa os depoimentos aprovados do participante ao fluxo
-4. um token temporario e gerado no dominio do evento
-5. o administrador abre a mensagem pronta no WhatsApp Web e realiza o envio manual
-6. o membro revisa cada carta e registra aprovacao ou reprovacao
-7. o sistema calcula a quantidade de paginas das cartas aprovadas
-8. o membro abre a impressao do navegador
-9. o fluxo somente e concluido depois da confirmacao explicita
+1. o administrador seleciona o tipo da tarefa
+2. o sistema lista apenas participantes e cartas elegiveis no evento atual
+3. o administrador seleciona o participante e as cartas desejadas
+4. o sistema lista apenas membros autorizados que ainda possuam vaga no limite global
+5. a elegibilidade e recalculada dentro de uma transacao antes da gravacao
+6. um token temporario e gerado no dominio do evento
+7. o administrador e redirecionado para a pagina exclusiva de compartilhamento
+8. o administrador copia o link ou abre a mensagem pronta no WhatsApp Web
+9. o membro revisa cada carta e registra aprovacao ou reprovacao
+10. o sistema calcula a quantidade de paginas das cartas aprovadas
+11. o membro abre a impressao do navegador
+12. o fluxo somente e concluido depois da confirmacao explicita
+
+Uma carta e elegivel para impressao principal quando possui aprovacao administrativa, nao esta arquivada, nunca recebeu decisao no Fluxo de Impressao e nao pertence a outro fluxo aberto.
 
 ### Reavaliacao
 
 Um fluxo de reavaliacao recebe cartas reprovadas e preserva as decisoes anteriores. A nova decisao e adicionada ao historico, sem substituir o registro anterior.
+
+A fila automatica inclui apenas cartas aguardando a primeira reavaliacao. Uma carta ja reavaliada e ainda reprovada sai do indicador automatico, recebe a marcacao `Ja reavaliada N vez(es)` e continua disponivel para redistribuicao manual com a opcao de incluir reavaliadas.
 
 ### Busca de depoimentos
 
@@ -41,6 +48,8 @@ Participantes abaixo do minimo configurado por evento podem ser distribuidos com
 - a conclusao exige confirmacao explicita do membro
 - reprovacao exige motivo
 - revisoes formam historico imutavel de decisoes
+- cada carta apresenta total de revisoes, total de reavaliacoes, ultima decisao, ultimo revisor e historico completo
+- a decisao mais recente dentro do fluxo determina se a carta segue para impressao
 - imagens preservam proporcao e orientacao; cartas sem imagem usam toda a largura
 - a composicao de paginas e deterministica para permitir contagem antes da impressao
 
@@ -87,6 +96,8 @@ Rotas administrativas:
 /admin/team
 /admin/print-flows
 /admin/print-flows/create
+/admin/print-flows/distribution-options
+/admin/print-flows/{printFlow}/share
 /admin/print-flows/{printFlow}/renew
 /admin/print-flows/{printFlow}/cancel
 ```
@@ -111,7 +122,19 @@ http://edd.atitudelaranja.test:8888/fluxos/{token}
 
 ## 7. UI
 
-O painel recebeu as areas `Fluxo de Impressao` e `Equipe`, mantendo o design administrativo existente. O dashboard mostra fluxos abertos e participantes criticos. As configuracoes incluem limite global, validade, acessos por link e minimo de depoimentos do evento.
+O painel recebeu as areas `Fluxo de Impressao` e `Equipe`, mantendo o design administrativo existente. A listagem do Fluxo de Impressao mostra tres cartoes operacionais:
+
+- participantes abaixo da meta
+- participantes com cartas elegiveis para impressao principal
+- participantes com cartas aguardando primeira reavaliacao
+
+A mesma tela permite filtrar tarefas por um ou varios status. Os status usam regra `OU` entre si e regra `E` com participante, membro, tipo e vencimento. A selecao permanece na URL e na paginacao.
+
+A distribuicao e vertical e dinamica: tipo, participantes, cartas, membro e resumo. A pesquisa filtra participantes pelo nome, todas as cartas elegiveis iniciam selecionadas e podem ser removidas individualmente. Membros sem vaga nao aparecem.
+
+A pagina de compartilhamento mostra o token original somente na primeira abertura depois da criacao ou renovacao. Depois disso, oferece a geracao de um novo link, preservando o armazenamento somente como hash.
+
+As configuracoes incluem limite global, validade, acessos por link e minimo de depoimentos do evento.
 
 O portal externo exibe:
 
@@ -130,6 +153,8 @@ Vida Vitoriosa usa a identidade dourada existente. EDD usa azul. O layout e resp
 - host diferente do evento: acesso bloqueado
 - membro inativo ou sem autorizacao: distribuicao rejeitada
 - limite global atingido: distribuicao rejeitada
+- carta fora da elegibilidade, de outro participante ou ja atribuida: distribuicao rejeitada
+- nenhuma carta selecionada em tarefa de revisao: distribuicao rejeitada
 - participante ou carta de outro evento: operacao rejeitada
 - reprovacao sem motivo: erro de validacao
 - revisao incompleta: impressao bloqueada
@@ -147,6 +172,12 @@ Cobertura automatizada principal:
 - limite global de tarefas entre eventos
 - token vinculado ao evento, consumo por sessao e expiracao
 - revisao com motivo obrigatorio e historico preservado
+- selecao parcial das cartas e rejeicao de identificadores adulterados
+- candidatos e cartoes calculados pelas mesmas regras de elegibilidade
+- membro no limite removido das opcoes e rejeitado novamente pelo backend
+- reavaliacao repetida fora da fila automatica e disponivel pela fila manual
+- filtro com um ou varios status combinado com participante
+- link original disponivel uma unica vez e renovacao com invalidacao do anterior
 - impressao sem conclusao automatica
 - confirmacao final e liberacao da capacidade do membro
 - composicao deterministica de paginas para texto curto, longo e sem imagem
@@ -155,6 +186,10 @@ Cobertura automatizada principal:
 Validacao visual local executada:
 
 - revisao Vida Vitoriosa em desktop e celular
+- listagem com tres cartoes no Vida Vitoriosa e no EDD
+- distribuicao vertical com selecao de cartas em desktop e celular
+- filtro multisselecao de status em celular
+- pagina sem sobreposicao do resumo em janelas de menor altura
 - imagens verticais e horizontais sem distorcao
 - emojis no texto das cartas
 - tarefa de busca EDD em desktop
@@ -190,3 +225,4 @@ http://edd.atitudelaranja.test:8888/fluxos/demo-edd-fluxo-impressao
 | Data | Alteracao | Motivo |
 |---|---|---|
 | 2026-08-18 | Criacao da documentacao canonica do Fluxo de Impressao implementado localmente | Registrar regras, dados, rotas, operacao, testes e pendencias da v3.0.0 |
+| 2026-08-18 | Implementacao da distribuicao dinamica, cartoes operacionais, filtro multiplo, historico de reavaliacoes e pagina de compartilhamento | Alinhar a operacao administrativa aos candidatos elegiveis e melhorar a rastreabilidade das tarefas |

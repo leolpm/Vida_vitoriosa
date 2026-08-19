@@ -35,9 +35,16 @@ class PrintFlowPortalController extends Controller
         }
 
         $flow->load(['testimonials' => fn ($q) => $q->orderBy('created_at'), 'reviews']);
-        $latestReviews = $flow->reviews->sortByDesc('decided_at')->unique('testimonial_id')->keyBy('testimonial_id');
+        $latestReviews = $flow->reviews->sortByDesc('id')->unique('testimonial_id')->keyBy('testimonial_id');
+        $reviewHistory = PrintFlowReview::query()
+            ->whereIn('testimonial_id', $flow->testimonials->pluck('id'))
+            ->with(['teamMember:id,name', 'printFlow:id,type,status'])
+            ->orderByDesc('decided_at')
+            ->orderByDesc('id')
+            ->get()
+            ->groupBy('testimonial_id');
 
-        return view('print-flows.review', compact('flow', 'token', 'latestReviews'));
+        return view('print-flows.review', compact('flow', 'token', 'latestReviews', 'reviewHistory'));
     }
 
     public function review(

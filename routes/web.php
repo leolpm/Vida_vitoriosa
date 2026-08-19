@@ -57,8 +57,10 @@ Route::prefix('admin')->name('admin.')->group(function () {
             ->except('show');
 
         Route::get('/print-flows', [AdminPrintFlowController::class, 'index'])->name('print-flows.index');
+        Route::get('/print-flows/distribution-options', [AdminPrintFlowController::class, 'distributionOptions'])->name('print-flows.distribution-options');
         Route::get('/print-flows/create', [AdminPrintFlowController::class, 'create'])->name('print-flows.create');
         Route::post('/print-flows', [AdminPrintFlowController::class, 'store'])->name('print-flows.store');
+        Route::get('/print-flows/{flow}/share', [AdminPrintFlowController::class, 'share'])->name('print-flows.share');
         Route::post('/print-flows/{flow}/renew', [AdminPrintFlowController::class, 'renew'])->name('print-flows.renew');
         Route::post('/print-flows/{flow}/cancel', [AdminPrintFlowController::class, 'cancel'])->name('print-flows.cancel');
 

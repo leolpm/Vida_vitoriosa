@@ -21,6 +21,7 @@
 /tmp/
 /output/
 /.playwright-cli/
+/.playwright-mcp/
 /vendor
 Homestead.json
 Homestead.yaml
