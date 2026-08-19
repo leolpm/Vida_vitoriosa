@@ -119,7 +119,7 @@ php artisan serve
 
 `php artisan serve` usa a porta 8888 pela configuracao do projeto.
 
-O `EddDemoSeeder` e idempotente e cria tres participantes, um depoimento aprovado e acesso ao EDD para os administradores existentes. O `DatabaseSeeder` completo recria os dois eventos e seus dados de demonstracao.
+O `EddDemoSeeder` e idempotente e permanece como alternativa incremental minima: cria tres participantes, um depoimento aprovado e acesso ao EDD para os administradores existentes. Ele nao representa a massa completa do Fluxo de Impressao. Para reconstruir o ambiente de validacao dos dois eventos, use `php artisan migrate:fresh --seed`; o seeder completo e bloqueado em producao.
 
 ## 10. Testes
 
@@ -168,3 +168,4 @@ Padrao compartilhado de requisicoes:
 |---|---|---|
 | 2026-08-18 | Criacao da documentacao canonica do modulo multi-eventos | Registrar a arquitetura implementada, operacao, isolamento e validacoes da v2.0.0 |
 | 2026-08-19 | Inclusao do feedback global e limite de reenvio do login | Padronizar a espera do servidor sem misturar o contexto dos eventos |
+| 2026-08-19 | Distincao entre o seeder incremental do EDD e a massa completa do fluxo | Evitar uso incorreto do seeder minimo nos testes integrados e impedir execucao da massa em producao |

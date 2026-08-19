@@ -44,7 +44,7 @@ class MultiEventIsolationTest extends TestCase
         $eddResponse->assertSeeText('Liderado EDD Exclusivo');
         $eddResponse->assertDontSeeText('Participante Vida Exclusivo');
         $eddResponse->assertSee('<body class="event-edd">', false);
-        $eddResponse->assertSee('images/events/edd/edd-public-banner.png', false);
+        $eddResponse->assertSee('/storage/events/edd/settings/public-site-default.png', false);
     }
 
     public function test_edd_submission_uses_host_event_and_rejects_foreign_participant(): void

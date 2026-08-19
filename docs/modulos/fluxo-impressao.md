@@ -200,17 +200,44 @@ As acoes administrativas e externas do fluxo usam o padrao de feedback de requis
 
 A tela administrativa redirecionou corretamente para o login por codigo. A inspecao visual autenticada do painel deve ser repetida manualmente antes da release; os endpoints administrativos permanecem cobertos pela suite automatizada.
 
-Dados locais de demonstracao:
+Dados locais de demonstracao completos:
+
+```powershell
+php artisan migrate:fresh --seed
+```
+
+O comando apaga e recria somente o banco configurado no ambiente local. O `PrintFlowScenarioSeeder` recusa execucao fora de `local` e `testing`, evitando que a massa de demonstracao substitua participantes reais em producao. O comando compativel abaixo reaplica apenas os cenarios sobre uma base local ja migrada:
 
 ```powershell
 php artisan db:seed --class=PrintFlowDemoSeeder
 ```
 
-Links conhecidos do seeder:
+Cada evento recebe 10 participantes ativos e 51 cartas, distribuidos nesta matriz:
+
+| Cenario | Cartas | Estado operacional |
+|---|---:|---|
+| Lote grande | 12 | Aprovadas e livres para distribuicao parcial ou total |
+| Fluxo principal pronto | 10 | Vinculadas a um fluxo aberto de impressao principal |
+| Reavaliacao | 6 | Historicos de primeira revisao, reavaliacao e aprovacao |
+| Busca em andamento | 0 | Vinculado a um fluxo aberto de busca |
+| Sem cartas | 0 | Livre para nova tarefa de busca |
+| Abaixo da meta | 1 | Livre para nova tarefa de busca |
+| Status variados | 5 | Aprovado, recebido, revisado e arquivado |
+| Galeria de fotos | 8 | JPEG, PNG e WebP em proporcoes vertical, horizontal e quadrada |
+| Textos longos | 4 | Com e sem imagem e com mais de uma pagina |
+| Cenario comum | 5 | Operacao cotidiana e filtros |
+
+As imagens sao sinteticas, nao representam pessoas reais e sao copiadas para `storage/app/public/events/{evento}/demo/`. Os arquivos-fonte versionados ficam em `database/seeders/assets/print-flow/` e podem ser recriados com `php scripts/generate_print_flow_fixtures.php` quando o PHP local possuir GD.
+
+Links conhecidos do seeder, validos por sete dias e com 100 acessos locais:
 
 ```text
-http://vidavitoriosa.atitudelaranja.test:8888/fluxos/demo-vida-vitoriosa-fluxo-impressao
-http://edd.atitudelaranja.test:8888/fluxos/demo-edd-fluxo-impressao
+http://vidavitoriosa.atitudelaranja.test:8888/fluxos/demo-vida-vitoriosa-impressao-principal
+http://vidavitoriosa.atitudelaranja.test:8888/fluxos/demo-vida-vitoriosa-reavaliacao
+http://vidavitoriosa.atitudelaranja.test:8888/fluxos/demo-vida-vitoriosa-busca-depoimentos
+http://edd.atitudelaranja.test:8888/fluxos/demo-edd-impressao-principal
+http://edd.atitudelaranja.test:8888/fluxos/demo-edd-reavaliacao
+http://edd.atitudelaranja.test:8888/fluxos/demo-edd-busca-depoimentos
 ```
 
 ## 11. Pendencias
@@ -229,3 +256,4 @@ http://edd.atitudelaranja.test:8888/fluxos/demo-edd-fluxo-impressao
 | 2026-08-18 | Criacao da documentacao canonica do Fluxo de Impressao implementado localmente | Registrar regras, dados, rotas, operacao, testes e pendencias da v3.0.0 |
 | 2026-08-18 | Implementacao da distribuicao dinamica, cartoes operacionais, filtro multiplo, historico de reavaliacoes e pagina de compartilhamento | Alinhar a operacao administrativa aos candidatos elegiveis e melhorar a rastreabilidade das tarefas |
 | 2026-08-19 | Integracao do feedback global nas acoes do fluxo | Impedir envios repetidos e informar o processamento sem bloquear controles locais |
+| 2026-08-19 | Ampliacao deterministica dos dados locais para 10 participantes e 51 cartas por evento | Permitir validar filas, imagens, paginacao, reavaliacoes e os tres tipos de fluxo sem usar dados reais |
