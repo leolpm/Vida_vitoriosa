@@ -18,7 +18,7 @@
                     <input type="text" name="code" id="code" inputmode="numeric" maxlength="6" class="form-control form-control-lg text-center @error('code') is-invalid @enderror" style="letter-spacing: .35em;" value="{{ old('code') }}" placeholder="000000">
                     @error('code') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-                <button type="submit" class="btn btn-gold btn-lg w-100">Verificar código</button>
+                <button type="submit" class="btn btn-gold btn-lg w-100" data-loading-text="Verificando código...">Verificar código</button>
                 <a href="{{ route('admin.login') }}" class="btn btn-link w-100 mt-2">Usar outro e-mail</a>
             </form>
         </div>

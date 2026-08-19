@@ -41,7 +41,7 @@
                         <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="d-inline" onsubmit="return confirm('Excluir este usuário?');">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger" type="submit">Excluir</button>
+                            <button class="btn btn-sm btn-outline-danger" type="submit" data-loading-text="Excluindo...">Excluir</button>
                         </form>
                     </td>
                 </tr>

@@ -35,9 +35,22 @@ Quando uma documentacao de modulo ou planejamento tocar em UI compartilhada, ela
 - nome do evento atual sempre aparente no painel
 - seletor superior para alternar apenas entre eventos autorizados
 
+## Feedback de requisicoes
+
+- toda acao que aguarda o servidor deve informar o processamento no proprio botao
+- o botao acionado exibe spinner, texto contextual e permanece bloqueado ate a navegacao ou resposta
+- os demais envios do mesmo formulario tambem ficam bloqueados para impedir requisicoes duplicadas
+- o formulario usa `aria-busy` e uma regiao de status informa a acao para tecnologias assistivas
+- filtros automaticos sem botao exibem um indicador inline
+- links de download ou abertura de relatorio usam feedback temporario de preparacao
+- controles locais, como menu, modal, copiar link, selecao de itens e `window.print()`, nao usam carregamento
+- formularios podem personalizar o texto com `data-loading-text` e sair do comportamento com `data-loading-ignore`
+- links de servidor usam `data-server-action`; a preferencia `prefers-reduced-motion` deve ser respeitada
+
 ## Historico de alteracoes
 
 | Data | Alteracao | Motivo |
 |---|---|---|
 | 2026-08-18 | Criacao das regras compartilhadas de UI | Preservar a identidade visual existente nas novas versoes |
 | 2026-08-18 | Inclusao das variacoes por evento e regras responsivas | Documentar a identidade EDD e o comportamento validado em desktop e celular |
+| 2026-08-19 | Padronizacao do feedback de requisicoes | Evitar cliques duplicados e tornar o processamento visivel nos tres ambientes do sistema |

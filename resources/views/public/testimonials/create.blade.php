@@ -396,7 +396,7 @@
                     </div>
 
                     <div class="col-12 text-center pt-2">
-                        <button type="submit" class="btn btn-submit btn-lg px-5">Enviar mensagem</button>
+                        <button type="submit" class="btn btn-submit btn-lg px-5" data-loading-text="Enviando mensagem...">Enviar mensagem</button>
                     </div>
                 </form>
             @endif

@@ -65,7 +65,7 @@
                         <option value="{{ $value }}" @selected($testimonial->status === $value)>{{ $label }}</option>
                     @endforeach
                 </select>
-                <button class="btn btn-gold w-100" type="submit">Salvar</button>
+                <button class="btn btn-gold w-100" type="submit" data-loading-text="Salvando...">Salvar</button>
             </form>
         </div>
 
@@ -74,7 +74,7 @@
             <h2 class="h5 mb-3">Arquivo enviado</h2>
             @if ($testimonial->photo_path)
                 <img src="{{ $testimonial->photo_url }}" alt="Foto do depoimento" class="img-fluid rounded-4 mb-3">
-                <a href="{{ route('admin.testimonials.photo', $testimonial) }}" class="btn btn-outline-dark w-100">Baixar foto</a>
+                <a href="{{ route('admin.testimonials.photo', $testimonial) }}" class="btn btn-outline-dark w-100" data-server-action data-loading-text="Preparando arquivo..." data-loading-reset-after="5000">Baixar foto</a>
             @else
                 <p class="text-secondary mb-0">Nenhuma foto foi enviada.</p>
             @endif

@@ -181,7 +181,7 @@
                             </td>
                             <td class="text-end">
                                 @if ($batch->file_path)
-                                    <a href="{{ route('admin.pdf.download', $batch) }}" class="btn btn-sm btn-outline-dark">Baixar</a>
+                                    <a href="{{ route('admin.pdf.download', $batch) }}" class="btn btn-sm btn-outline-dark" data-server-action data-loading-text="Preparando arquivo..." data-loading-reset-after="5000">Baixar</a>
                                 @endif
                             </td>
                         </tr>

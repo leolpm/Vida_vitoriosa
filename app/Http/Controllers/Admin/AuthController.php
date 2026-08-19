@@ -9,16 +9,16 @@ use App\Support\CurrentEvent;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\View\View;
+use Throwable;
 
 class AuthController extends Controller
 {
     public function __construct(
         private readonly LoginCodeService $loginCodeService,
         private readonly CurrentEvent $currentEvent,
-    )
-    {
-    }
+    ) {}
 
     public function showLoginForm(): View
     {
@@ -49,7 +49,38 @@ class AuthController extends Controller
                 ->with('error', 'Este usuário não possui acesso administrativo a este evento.');
         }
 
-        $this->loginCodeService->send($user);
+        $rateLimitKey = hash('sha256', implode('|', [
+            'admin-login-code',
+            $this->currentEvent->id(),
+            $user->id,
+            $request->ip(),
+        ]));
+        $resendSeconds = (int) config('vida.login_code_resend_seconds', 60);
+
+        try {
+            $sent = RateLimiter::attempt(
+                $rateLimitKey,
+                1,
+                function () use ($user): bool {
+                    $this->loginCodeService->send($user);
+
+                    return true;
+                },
+                $resendSeconds,
+            );
+        } catch (Throwable $exception) {
+            RateLimiter::clear($rateLimitKey);
+
+            throw $exception;
+        }
+
+        if (! $sent) {
+            $availableIn = max(1, RateLimiter::availableIn($rateLimitKey));
+
+            return back()
+                ->withInput()
+                ->with('error', "Aguarde {$availableIn} segundos antes de solicitar outro código.");
+        }
 
         $request->session()->put('admin_login_email', $user->email);
         $request->session()->put('admin_login_event_id', $this->currentEvent->id());

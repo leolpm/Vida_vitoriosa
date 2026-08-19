@@ -149,7 +149,7 @@
         </div>
 
         <div class="col-12 d-flex gap-2">
-            <button class="btn btn-gold btn-lg" type="submit">Salvar configurações</button>
+            <button class="btn btn-gold btn-lg" type="submit" data-loading-text="Salvando...">Salvar configurações</button>
             <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-dark btn-lg">Voltar</a>
         </div>
     </form>
@@ -210,7 +210,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-danger" id="systemResetSubmit" disabled>Apagar tudo</button>
+                    <button type="submit" class="btn btn-danger" id="systemResetSubmit" data-loading-text="Apagando dados..." disabled>Apagar tudo</button>
                 </div>
             </form>
         </div>

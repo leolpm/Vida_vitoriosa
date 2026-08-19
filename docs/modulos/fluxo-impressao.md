@@ -196,6 +196,8 @@ Validacao visual local executada:
 - identidade separada por evento
 - ausencia de erros de console nas paginas validas
 
+As acoes administrativas e externas do fluxo usam o padrao de feedback de requisicoes definido em `docs/ui-standards.md`. Distribuicao, renovacao, cancelamento, revisao e conclusao bloqueiam novos envios enquanto aguardam o servidor; controles locais e a impressao do navegador permanecem imediatos.
+
 A tela administrativa redirecionou corretamente para o login por codigo. A inspecao visual autenticada do painel deve ser repetida manualmente antes da release; os endpoints administrativos permanecem cobertos pela suite automatizada.
 
 Dados locais de demonstracao:
@@ -226,3 +228,4 @@ http://edd.atitudelaranja.test:8888/fluxos/demo-edd-fluxo-impressao
 |---|---|---|
 | 2026-08-18 | Criacao da documentacao canonica do Fluxo de Impressao implementado localmente | Registrar regras, dados, rotas, operacao, testes e pendencias da v3.0.0 |
 | 2026-08-18 | Implementacao da distribuicao dinamica, cartoes operacionais, filtro multiplo, historico de reavaliacoes e pagina de compartilhamento | Alinhar a operacao administrativa aos candidatos elegiveis e melhorar a rastreabilidade das tarefas |
+| 2026-08-19 | Integracao do feedback global nas acoes do fluxo | Impedir envios repetidos e informar o processamento sem bloquear controles locais |

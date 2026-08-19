@@ -24,6 +24,7 @@ return [
 
     'testimonial_upload_max_kb' => 10240,
     'login_code_expires_minutes' => 15,
+    'login_code_resend_seconds' => 60,
     'pdf_default_mode' => 'only_new',
     'dev_server_port' => env('APP_SERVE_PORT', 8888),
 ];

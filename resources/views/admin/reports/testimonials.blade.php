@@ -8,10 +8,10 @@
 <div class="card-surface report-toolbar p-4 mb-4">
     @include('admin.reports.partials.nav')
 
-    <form method="GET" action="{{ route('admin.reports.testimonials') }}" class="row g-3 align-items-end">
+    <form method="GET" action="{{ route('admin.reports.testimonials') }}" class="row g-3 align-items-end" data-loading-text="Aplicando filtros...">
         <div class="col-12 col-xl-3">
             <label class="form-label fw-semibold" for="status">Status</label>
-            <select name="status" id="status" class="form-select" onchange="this.form.submit()">
+            <select name="status" id="status" class="form-select" onchange="this.form.requestSubmit()">
                 <option value="all" @selected($status === 'all')>Todos</option>
                 <option value="received" @selected($status === 'received')>Recebido</option>
                 <option value="reviewed" @selected($status === 'reviewed')>Revisado</option>
@@ -21,7 +21,7 @@
         </div>
         <div class="col-12 col-xl-3">
             <label class="form-label fw-semibold" for="generated">PDF gerado</label>
-            <select name="generated" id="generated" class="form-select" onchange="this.form.submit()">
+            <select name="generated" id="generated" class="form-select" onchange="this.form.requestSubmit()">
                 <option value="all" @selected($generated === 'all')>Todos</option>
                 <option value="yes" @selected($generated === 'yes')>Sim</option>
                 <option value="no" @selected($generated === 'no')>Não</option>
@@ -29,8 +29,14 @@
         </div>
         <div class="col-12 col-xl-6">
             <div class="d-flex flex-wrap gap-2 justify-content-xl-end">
-                <a href="{{ route('admin.reports.testimonials.print', request()->query()) }}" target="_blank" class="btn btn-outline-dark btn-lg">Imprimir</a>
-                <a href="{{ route('admin.reports.testimonials.excel', request()->query()) }}" class="btn btn-gold btn-lg">Excel</a>
+                <a href="{{ route('admin.reports.testimonials.print', request()->query()) }}" target="_blank" class="btn btn-outline-dark btn-lg" data-server-action data-loading-text="Abrindo impressão...">Imprimir</a>
+                <a href="{{ route('admin.reports.testimonials.excel', request()->query()) }}" class="btn btn-gold btn-lg" data-server-action data-loading-text="Preparando arquivo..." data-loading-reset-after="5000">Excel</a>
+            </div>
+        </div>
+        <div class="col-12" data-loading-status hidden>
+            <div class="small text-secondary d-flex align-items-center gap-2">
+                <span class="spinner-border spinner-border-sm request-feedback-spinner" aria-hidden="true"></span>
+                <span>Aplicando filtros...</span>
             </div>
         </div>
     </form>

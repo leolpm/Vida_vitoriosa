@@ -29,7 +29,7 @@
             </select>
         </div>
         <div class="col-12 col-md-auto d-flex gap-2">
-            <button class="btn btn-outline-dark">Filtrar</button>
+            <button class="btn btn-outline-dark" data-loading-text="Aplicando filtros...">Filtrar</button>
             <a href="{{ route('admin.team.index') }}" class="btn btn-outline-secondary">Limpar</a>
         </div>
     </form>
@@ -55,7 +55,7 @@
                         <a href="{{ route('admin.team.edit', $member) }}" class="btn btn-sm btn-outline-dark">Editar</a>
                         <form method="POST" action="{{ route('admin.team.destroy', $member) }}" class="d-inline" onsubmit="return confirm('Excluir este membro?');">
                             @csrf @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger">Excluir</button>
+                            <button class="btn btn-sm btn-outline-danger" data-loading-text="Excluindo...">Excluir</button>
                         </form>
                     </td>
                 </tr>

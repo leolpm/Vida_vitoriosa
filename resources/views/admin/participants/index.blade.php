@@ -13,7 +13,7 @@
         </div>
         <div class="d-flex flex-wrap gap-2">
             <a href="{{ route('admin.participants.import.form') }}" class="btn btn-outline-dark">Importar planilha</a>
-            <a href="{{ route('admin.participants.template') }}" class="btn btn-outline-secondary">Baixar modelo</a>
+            <a href="{{ route('admin.participants.template') }}" class="btn btn-outline-secondary" data-server-action data-loading-text="Preparando arquivo..." data-loading-reset-after="5000">Baixar modelo</a>
             <a href="{{ route('admin.participants.create') }}" class="btn btn-gold">Novo participante</a>
         </div>
     </div>
@@ -53,7 +53,7 @@
             >
         </div>
         <div class="col-12 col-md-auto">
-            <button class="btn btn-outline-dark" type="submit">Filtrar</button>
+            <button class="btn btn-outline-dark" type="submit" data-loading-text="Aplicando filtros...">Filtrar</button>
             @if (($participantName ?? request('participant_name')) !== '')
                 <a href="{{ route('admin.participants.index') }}" class="btn btn-outline-secondary ms-2">Limpar</a>
             @endif
@@ -90,7 +90,7 @@
                         <form action="{{ route('admin.participants.destroy', $participant) }}" method="POST" class="d-inline" onsubmit="return confirm('Excluir este participante?');">
                             @csrf
                             @method('DELETE')
-                            <button class="btn btn-sm btn-outline-danger" type="submit">Excluir</button>
+                            <button class="btn btn-sm btn-outline-danger" type="submit" data-loading-text="Excluindo...">Excluir</button>
                         </form>
                     </td>
                 </tr>

@@ -14,7 +14,7 @@
             <input class="form-check-input" type="checkbox" name="search_confirmation" value="1" id="search_confirmation" required>
             <label class="form-check-label fw-semibold" for="search_confirmation">Concluí a busca de depoimentos e informei a equipe.</label>
         </div>
-        <button class="btn btn-flow btn-lg">Concluir tarefa</button>
+        <button class="btn btn-flow btn-lg" data-loading-text="Concluindo tarefa...">Concluir tarefa</button>
     </form>
 </div>
 @endsection

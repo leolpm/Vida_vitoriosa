@@ -101,7 +101,7 @@
                 <div class="small text-secondary">O link temporário será exibido na próxima tela.</div>
             </div>
             <div class="d-flex flex-wrap gap-2">
-                <button class="btn btn-gold btn-lg" id="submit-distribution" disabled><i class="bi bi-send me-1"></i>Distribuir fluxo</button>
+                    <button class="btn btn-gold btn-lg" id="submit-distribution" data-loading-text="Distribuindo fluxo..." disabled><i class="bi bi-send me-1"></i>Distribuir fluxo</button>
                 <a href="{{ route('admin.print-flows.index') }}" class="btn btn-outline-dark btn-lg">Cancelar</a>
             </div>
         </div>

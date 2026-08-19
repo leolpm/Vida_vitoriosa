@@ -13,7 +13,7 @@
                     <div class="section-eyebrow text-secondary mb-1">Importação em massa</div>
                     <h2 class="h5 mb-0">Enviar CSV ou Excel</h2>
                 </div>
-                <a href="{{ route('admin.participants.template') }}" class="btn btn-outline-secondary">Baixar modelo</a>
+                <a href="{{ route('admin.participants.template') }}" class="btn btn-outline-secondary" data-server-action data-loading-text="Preparando arquivo..." data-loading-reset-after="5000">Baixar modelo</a>
             </div>
 
             @if ($errors->any())
@@ -51,7 +51,7 @@
                 </div>
 
                 <div class="col-12 d-flex gap-2">
-                    <button class="btn btn-gold btn-lg" type="submit">Importar participantes</button>
+                    <button class="btn btn-gold btn-lg" type="submit" data-loading-text="Importando participantes...">Importar participantes</button>
                     <a href="{{ route('admin.participants.index') }}" class="btn btn-outline-dark btn-lg">Voltar</a>
                 </div>
             </form>

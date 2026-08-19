@@ -8,21 +8,25 @@
 <div class="card-surface report-toolbar p-4 mb-4">
     @include('admin.reports.partials.nav')
 
-    <form method="GET" action="{{ route('admin.reports.participants') }}" class="row g-3 align-items-end">
+    <form method="GET" action="{{ route('admin.reports.participants') }}" class="row g-3 align-items-end" data-loading-text="Aplicando filtros...">
         <div class="col-12 col-xl-5">
             <label class="form-label fw-semibold" for="participants_filter">Filtro de participantes</label>
-            <select name="participants_filter" id="participants_filter" class="form-select" onchange="this.form.submit()">
+            <select name="participants_filter" id="participants_filter" class="form-select" onchange="this.form.requestSubmit()">
                 <option value="all" @selected($filter === 'all')>Todos os participantes</option>
                 <option value="approved_pending" @selected($filter === 'approved_pending')>Aprovados sem PDF</option>
                 <option value="approved" @selected($filter === 'approved')>Com depoimentos aprovados</option>
                 <option value="pending" @selected($filter === 'pending')>Com depoimentos pendentes</option>
                 <option value="without_testimonials" @selected($filter === 'without_testimonials')>Sem depoimentos</option>
             </select>
+            <div class="small text-secondary mt-2 d-flex align-items-center gap-2" data-loading-status hidden>
+                <span class="spinner-border spinner-border-sm request-feedback-spinner" aria-hidden="true"></span>
+                <span>Aplicando filtros...</span>
+            </div>
         </div>
         <div class="col-12 col-xl-7">
             <div class="d-flex flex-wrap gap-2 justify-content-xl-end">
-                <a href="{{ route('admin.reports.participants.print', request()->query()) }}" target="_blank" class="btn btn-outline-dark btn-lg">Imprimir</a>
-                <a href="{{ route('admin.reports.participants.excel', request()->query()) }}" class="btn btn-gold btn-lg">Excel</a>
+                <a href="{{ route('admin.reports.participants.print', request()->query()) }}" target="_blank" class="btn btn-outline-dark btn-lg" data-server-action data-loading-text="Abrindo impressão...">Imprimir</a>
+                <a href="{{ route('admin.reports.participants.excel', request()->query()) }}" class="btn btn-gold btn-lg" data-server-action data-loading-text="Preparando arquivo..." data-loading-reset-after="5000">Excel</a>
             </div>
         </div>
     </form>

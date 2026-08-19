@@ -68,7 +68,7 @@
             </select>
         </div>
         <div class="col-12 col-md-2">
-            <button class="btn btn-gold w-100" type="submit">Filtrar</button>
+            <button class="btn btn-gold w-100" type="submit" data-loading-text="Aplicando filtros...">Filtrar</button>
         </div>
     </form>
 </div>

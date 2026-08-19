@@ -43,7 +43,7 @@
                 @if($flow->isOpen())
                     <form method="POST" action="{{ route('admin.print-flows.renew', $flow) }}">
                         @csrf
-                        <button class="btn btn-gold btn-lg"><i class="bi bi-arrow-clockwise me-1"></i>Gerar novo link</button>
+                        <button class="btn btn-gold btn-lg" data-loading-text="Gerando link..."><i class="bi bi-arrow-clockwise me-1"></i>Gerar novo link</button>
                     </form>
                 @endif
                 <a href="{{ route('admin.print-flows.index') }}" class="btn btn-outline-dark btn-lg">Voltar para os fluxos</a>

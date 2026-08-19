@@ -34,7 +34,7 @@
                     <div class="small text-secondary mb-2">
                         Use os filtros para priorizar participantes com depoimentos aprovados sem PDF, apenas aprovados, apenas pendentes ou sem depoimentos.
                     </div>
-                    <button class="btn btn-outline-dark w-100" type="submit">Filtrar</button>
+                    <button class="btn btn-outline-dark w-100" type="submit" data-loading-text="Aplicando filtros...">Filtrar</button>
                 </div>
             </form>
         </div>
@@ -72,13 +72,13 @@
                                         @csrf
                                         <input type="hidden" name="mode" value="only_new">
                                         <input type="hidden" name="status_filter" value="approved">
-                                        <button class="btn btn-sm btn-gold w-100" type="submit">Novos aprovados</button>
+                                        <button class="btn btn-sm btn-gold w-100" type="submit" data-loading-text="Gerando PDF...">Novos aprovados</button>
                                     </form>
                                     <form action="{{ route('admin.pdf.generate', $participant) }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="mode" value="full_regeneration">
                                         <input type="hidden" name="status_filter" value="approved">
-                                        <button class="btn btn-sm btn-outline-dark w-100" type="submit">Regerar aprovados</button>
+                                        <button class="btn btn-sm btn-outline-dark w-100" type="submit" data-loading-text="Gerando PDF...">Regerar aprovados</button>
                                     </form>
                                 </div>
                                 <div class="d-grid gap-2">
@@ -86,13 +86,13 @@
                                         @csrf
                                         <input type="hidden" name="mode" value="only_new">
                                         <input type="hidden" name="status_filter" value="all">
-                                        <button class="btn btn-sm btn-secondary w-100" type="submit">Novos todos</button>
+                                        <button class="btn btn-sm btn-secondary w-100" type="submit" data-loading-text="Gerando PDF...">Novos todos</button>
                                     </form>
                                     <form action="{{ route('admin.pdf.generate', $participant) }}" method="POST">
                                         @csrf
                                         <input type="hidden" name="mode" value="full_regeneration">
                                         <input type="hidden" name="status_filter" value="all">
-                                        <button class="btn btn-sm btn-dark w-100" type="submit">Regerar todos</button>
+                                        <button class="btn btn-sm btn-dark w-100" type="submit" data-loading-text="Gerando PDF...">Regerar todos</button>
                                     </form>
                                 </div>
                             </div>
@@ -127,7 +127,7 @@
                             </td>
                             <td class="text-end">
                                 @if ($batch->file_path)
-                                    <a href="{{ route('admin.pdf.download', $batch) }}" class="btn btn-sm btn-outline-dark">Baixar</a>
+                                    <a href="{{ route('admin.pdf.download', $batch) }}" class="btn btn-sm btn-outline-dark" data-server-action data-loading-text="Preparando arquivo..." data-loading-reset-after="5000">Baixar</a>
                                 @endif
                             </td>
                         </tr>

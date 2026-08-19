@@ -39,7 +39,7 @@
     <div class="small text-white-50">{{ auth()->user()?->email }}</div>
     <form action="{{ route('admin.logout') }}" method="POST" class="mt-3">
         @csrf
-        <button class="btn btn-outline-light w-100" type="submit">
+        <button class="btn btn-outline-light w-100" type="submit" data-loading-text="Saindo...">
             <i class="bi bi-box-arrow-right me-1"></i> Sair
         </button>
     </form>

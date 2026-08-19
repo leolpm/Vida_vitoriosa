@@ -126,7 +126,7 @@
             </div>
         </div>
         <div class="col-12 col-xl-2 d-flex gap-2">
-            <button class="btn btn-outline-dark flex-grow-1"><i class="bi bi-funnel me-1"></i>Filtrar</button>
+            <button class="btn btn-outline-dark flex-grow-1" data-loading-text="Aplicando filtros..."><i class="bi bi-funnel me-1"></i>Filtrar</button>
             <a href="{{ route('admin.print-flows.index') }}" class="btn btn-outline-secondary" title="Limpar todos os filtros"><i class="bi bi-x-lg"></i></a>
         </div>
         <div class="col-12">
@@ -178,8 +178,8 @@
                     <td class="text-end text-nowrap">
                         <a href="{{ route('admin.print-flows.share', $flow) }}" class="btn btn-sm btn-outline-dark">Detalhes</a>
                         @if($flow->isOpen())
-                            <form method="POST" action="{{ route('admin.print-flows.renew', $flow) }}" class="d-inline">@csrf<button class="btn btn-sm btn-outline-success">Novo link</button></form>
-                            <form method="POST" action="{{ route('admin.print-flows.cancel', $flow) }}" class="d-inline" onsubmit="return confirm('Cancelar este fluxo e invalidar o link?');">@csrf<button class="btn btn-sm btn-outline-danger">Cancelar</button></form>
+                            <form method="POST" action="{{ route('admin.print-flows.renew', $flow) }}" class="d-inline">@csrf<button class="btn btn-sm btn-outline-success" data-loading-text="Gerando link...">Novo link</button></form>
+                            <form method="POST" action="{{ route('admin.print-flows.cancel', $flow) }}" class="d-inline" onsubmit="return confirm('Cancelar este fluxo e invalidar o link?');">@csrf<button class="btn btn-sm btn-outline-danger" data-loading-text="Cancelando...">Cancelar</button></form>
                         @endif
                     </td>
                 </tr>

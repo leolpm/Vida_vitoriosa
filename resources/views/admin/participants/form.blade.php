@@ -40,7 +40,7 @@
         </div>
 
         <div class="col-12 d-flex gap-2">
-            <button class="btn btn-gold btn-lg" type="submit">Salvar</button>
+            <button class="btn btn-gold btn-lg" type="submit" data-loading-text="Salvando...">Salvar</button>
             <a href="{{ route('admin.participants.index') }}" class="btn btn-outline-dark btn-lg">Cancelar</a>
         </div>
     </form>

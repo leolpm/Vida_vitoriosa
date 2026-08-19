@@ -20,7 +20,7 @@
         <div class="text-secondary">Responsável: {{ $flow->teamMember->name }} · {{ $flow->testimonials->count() }} carta(s)</div>
     </div>
     @if($reviewDone)
-        <a href="{{ route('print-flows.print', $token) }}" class="btn btn-flow btn-lg" target="_blank" rel="noopener"><i class="bi bi-printer me-1"></i>Abrir impressão</a>
+        <a href="{{ route('print-flows.print', $token) }}" class="btn btn-flow btn-lg" target="_blank" rel="noopener" data-server-action data-loading-text="Abrindo impressão..."><i class="bi bi-printer me-1"></i>Abrir impressão</a>
     @endif
 </div>
 
@@ -77,7 +77,7 @@
                             <label class="form-label fw-semibold">Motivo da reprovação</label>
                             <input name="rejection_reason" class="form-control" value="{{ $review?->rejection_reason }}" maxlength="1000" data-reason>
                         </div>
-                        <div class="col-12 col-md-2"><button class="btn btn-outline-dark w-100">Salvar</button></div>
+                        <div class="col-12 col-md-2"><button class="btn btn-outline-dark w-100" data-loading-text="Salvando revisão...">Salvar</button></div>
                     </div>
                 </form>
             </article>
@@ -86,21 +86,21 @@
     <form method="POST" action="{{ route('print-flows.review.finish', $token) }}" class="flow-card mt-4 d-flex flex-column flex-md-row align-items-md-center justify-content-between gap-3">
         @csrf
         <div><div class="fw-bold">Concluir a revisão</div><div class="text-secondary small">Todas as cartas precisam ter uma decisão registrada.</div></div>
-        <button class="btn btn-flow btn-lg">Avançar para impressão</button>
+        <button class="btn btn-flow btn-lg" data-loading-text="Preparando impressão...">Avançar para impressão</button>
     </form>
 @else
     <div class="flow-card">
         <div class="flow-eyebrow mb-2">Próxima ação</div>
         <h2 class="flow-title h4">Imprima o lote e confirme a conclusão</h2>
         <p class="text-secondary">A abertura da janela de impressão não conclui automaticamente a tarefa.</p>
-        <a href="{{ route('print-flows.print', $token) }}" class="btn btn-flow btn-lg" target="_blank" rel="noopener"><i class="bi bi-printer me-1"></i>Abrir impressão</a>
+        <a href="{{ route('print-flows.print', $token) }}" class="btn btn-flow btn-lg" target="_blank" rel="noopener" data-server-action data-loading-text="Abrindo impressão..."><i class="bi bi-printer me-1"></i>Abrir impressão</a>
         <form method="POST" action="{{ route('print-flows.complete', $token) }}" class="mt-4 pt-4 border-top">
             @csrf
             <div class="form-check border rounded-4 p-3 ps-5 mb-3">
                 <input class="form-check-input" type="checkbox" name="printed_confirmation" value="1" id="printed_confirmation" required>
                 <label class="form-check-label fw-semibold" for="printed_confirmation">Confirmo que o lote foi impresso e a tarefa foi concluída.</label>
             </div>
-            <button class="btn btn-success btn-lg">Confirmar conclusão</button>
+            <button class="btn btn-success btn-lg" data-loading-text="Concluindo fluxo...">Confirmar conclusão</button>
         </form>
     </div>
 @endif

@@ -17,7 +17,7 @@
                     <input type="email" name="email" id="email" class="form-control form-control-lg @error('email') is-invalid @enderror" value="{{ old('email') }}" placeholder="voce@exemplo.com">
                     @error('email') <div class="invalid-feedback">{{ $message }}</div> @enderror
                 </div>
-                <button type="submit" class="btn btn-gold btn-lg w-100">Enviar código</button>
+                <button type="submit" class="btn btn-gold btn-lg w-100" data-loading-text="Enviando código...">Enviar código</button>
             </form>
         </div>
     </div>

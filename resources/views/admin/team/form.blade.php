@@ -47,7 +47,7 @@
             </fieldset>
         </div>
         <div class="col-12 d-flex gap-2">
-            <button class="btn btn-gold btn-lg">Salvar membro</button>
+            <button class="btn btn-gold btn-lg" data-loading-text="Salvando...">Salvar membro</button>
             <a href="{{ route('admin.team.index') }}" class="btn btn-outline-dark btn-lg">Voltar</a>
         </div>
     </form>

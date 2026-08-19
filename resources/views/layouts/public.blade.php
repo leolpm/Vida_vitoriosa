@@ -151,6 +151,7 @@
             }
         }
     </style>
+    @include('partials.request-feedback-styles')
     @stack('styles')
 </head>
 <body class="event-{{ $currentEvent->slug }}">
@@ -170,7 +171,7 @@
                 <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-dark btn-sm">Painel</a>
                 <form action="{{ route('admin.logout') }}" method="POST" class="d-inline">
                     @csrf
-                    <button class="btn btn-dark btn-sm" type="submit">Sair</button>
+                    <button class="btn btn-dark btn-sm" type="submit" data-loading-text="Saindo...">Sair</button>
                 </form>
             @else
                 <a href="{{ route('admin.login') }}" class="btn btn-outline-dark btn-sm">Área administrativa</a>
@@ -198,6 +199,7 @@
 </main>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+@include('partials.request-feedback')
 @stack('scripts')
 </body>
 </html>

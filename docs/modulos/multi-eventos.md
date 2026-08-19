@@ -149,6 +149,13 @@ Validacao visual executada em navegador real:
 - participantes, depoimentos, relatorios e PDF EDD
 - geracao e download real de PDF EDD com uma pagina
 
+Padrao compartilhado de requisicoes:
+
+- formularios publicos e administrativos exibem carregamento contextual no botao acionado
+- o envio do codigo administrativo permite uma solicitacao a cada 60 segundos por evento, usuario e IP
+- tentativas repetidas preservam o codigo ja enviado e informam o tempo restante
+- as regras visuais canonicas estao em `docs/ui-standards.md`
+
 ## 11. Pendencias
 
 - publicar a branch validada e criar a tag `v2.0.0` somente no ponto de release aprovado
@@ -160,3 +167,4 @@ Validacao visual executada em navegador real:
 | Data | Alteracao | Motivo |
 |---|---|---|
 | 2026-08-18 | Criacao da documentacao canonica do modulo multi-eventos | Registrar a arquitetura implementada, operacao, isolamento e validacoes da v2.0.0 |
+| 2026-08-19 | Inclusao do feedback global e limite de reenvio do login | Padronizar a espera do servidor sem misturar o contexto dos eventos |
