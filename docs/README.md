@@ -36,12 +36,13 @@ Este diretorio concentra planejamento, backlog, roadmap e documentos de decisao 
 ### Modulos implementados
 
 - `docs/modulos/multi-eventos.md`: arquitetura por dominio, isolamento, EDD e operacao da v2.0.0
-- `docs/modulos/fluxo-impressao.md`: distribuicao, acesso por token, revisao, impressao no navegador e auditoria da v3.0.0 local
+- `docs/modulos/fluxo-impressao.md`: distribuicao, acesso por token, revisao, impressao no navegador e auditoria da v3.0.0
 
 ### Implantacao
 
 - `docs/implantacao/README.md`: indice de registros de deploy
 - `docs/implantacao/v2.0.0-producao.md`: deploy da v2.0.0, preservacao dos dados e ativacao HTTPS do EDD
+- `docs/implantacao/v3.0.0-producao.md`: deploy da v3.0.0, integridade dos dados e limpeza controlada dos backups
 
 ## Historico de alteracoes
 
@@ -54,3 +55,4 @@ Este diretorio concentra planejamento, backlog, roadmap e documentos de decisao 
 | 2026-08-18 | Atualizacao do estado HTTPS do EDD | Registrar a correcao do DNS, emissao do certificado e redirecionamento obrigatorio |
 | 2026-08-18 | Inclusao da documentacao canonica do Fluxo de Impressao | Registrar a implementacao local da v3.0.0 sem confundir com release ou deploy |
 | 2026-08-18 | Inclusao do planejamento de melhoria da distribuicao e das revisoes | Separar a evolucao futura do comportamento canonico ja implementado |
+| 2026-08-30 | Inclusao do registro de implantacao da v3.0.0 | Atualizar o indice para o estado efetivamente publicado em producao |

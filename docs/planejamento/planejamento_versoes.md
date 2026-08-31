@@ -41,7 +41,7 @@ v2.0.0
 |---|---|---|
 | `v1.0.0` | Estavel e congelada | Sistema atual do Vida Vitoriosa em modo monoevento |
 | `v2.0.0` | Implantada e operacional em HTTPS | Arquitetura multi-evento, subdominios e formulario EDD |
-| `v3.0.0` | Implementada localmente; homologacao pendente | Fluxo de Impressao multi-evento |
+| `v3.0.0` | Implantada e validada em producao; tag pendente | Fluxo de Impressao multi-evento |
 
 ## 3.1 Versao 1.0.0 - Vida Vitoriosa
 
@@ -133,7 +133,7 @@ Escopo principal:
 - participantes criticos
 - auditoria do fluxo
 
-Tag prevista:
+Tag de release:
 
 ```text
 v3.0.0
@@ -141,11 +141,14 @@ v3.0.0
 
 Estado atual:
 
-- estrutura, telas, regras e dados de demonstracao implementados localmente
-- migrations executadas somente no banco local
-- testes automatizados e validacao visual publica concluidos localmente
-- branch ainda nao publicada nem implantada
-- tag ainda nao criada
+- estrutura, telas e regras implantadas em producao
+- migration incremental executada sem alterar os dados anteriores
+- usuarios, participantes, depoimentos, lotes PDF e imagens preservados
+- branch e `main` publicadas no GitHub
+- testes automatizados aprovados com 49 testes e 444 assercoes
+- formularios e logins dos dois eventos validados em HTTPS
+- dados de demonstracao mantidos exclusivamente nos ambientes local e de teste
+- tag sera criada depois do registro final da limpeza autorizada dos backups
 
 ---
 
@@ -227,3 +230,4 @@ Nao devem ser feitas alteracoes diretamente enquanto o repositorio estiver em es
 | 2026-08-18 | Registro da implantacao da v2.0.0 com ativacao EDD pendente | Separar deploy concluido do bloqueio externo de DNS e certificado |
 | 2026-08-18 | Atualizacao da v2.0.0 para operacional em HTTPS | Registrar a conclusao da ativacao do subdominio EDD |
 | 2026-08-18 | Atualizacao da v3.0.0 para implementada localmente e pendente de homologacao | Preservar a separacao entre implementacao, release e deploy |
+| 2026-08-30 | Atualizacao da v3.0.0 para implantada e validada em producao | Registrar a migration incremental, a preservacao dos dados e a preparacao da tag final |
