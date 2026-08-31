@@ -147,6 +147,8 @@ O portal externo exibe:
 - resumo de paginas antes da impressao
 - confirmacao de conclusao separada da abertura da impressao
 
+Ao salvar uma decisao, tanto na revisao inicial quanto na reavaliacao, o redirecionamento inclui a ancora do formulario da carta. A pagina preserva os dados em erros de validacao, apresenta a confirmacao junto aos controles e, depois do carregamento das imagens, centraliza novamente a area em que o membro estava trabalhando.
+
 Vida Vitoriosa usa a identidade dourada existente. EDD usa azul. O layout e responsivo e empilha etapas, conteudo, imagens e acoes em telas pequenas.
 
 ## 8. Erros e excecoes
@@ -174,6 +176,7 @@ Cobertura automatizada principal:
 - limite global de tarefas entre eventos
 - token vinculado ao evento, consumo por sessao e expiracao
 - revisao com motivo obrigatorio e historico preservado
+- retorno para a mesma carta depois de salvar ou receber erro de validacao
 - selecao parcial das cartas e rejeicao de identificadores adulterados
 - candidatos e cartoes calculados pelas mesmas regras de elegibilidade
 - membro no limite removido das opcoes e rejeitado novamente pelo backend
@@ -260,3 +263,4 @@ http://edd.atitudelaranja.test:8888/fluxos/demo-edd-busca-depoimentos
 | 2026-08-19 | Integracao do feedback global nas acoes do fluxo | Impedir envios repetidos e informar o processamento sem bloquear controles locais |
 | 2026-08-19 | Ampliacao deterministica dos dados locais para 10 participantes e 51 cartas por evento | Permitir validar filas, imagens, paginacao, reavaliacoes e os tres tipos de fluxo sem usar dados reais |
 | 2026-08-30 | Correcao da copia do link temporario em origens HTTP locais | Oferecer fallback quando a Clipboard API estiver indisponivel por falta de contexto seguro |
+| 2026-08-30 | Retomada da posicao da carta apos salvar uma revisao | Evitar que revisoes iniciais e reavaliacoes retornem ao topo da pagina |

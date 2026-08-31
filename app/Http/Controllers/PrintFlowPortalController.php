@@ -12,6 +12,7 @@ use App\Services\PrintPageComposer;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,10 +58,23 @@ class PrintFlowPortalController extends Controller
         $flow = $access->resolve($token, $request);
         abort_unless($flow->current_step === 'review' && $flow->testimonials()->whereKey($testimonial->id)->exists(), 404);
 
-        $validated = $request->validate([
+        $anchor = 'revisao-carta-'.$testimonial->id;
+        $validator = Validator::make($request->all(), [
             'decision' => ['required', Rule::in(['approved', 'rejected'])],
             'rejection_reason' => ['nullable', 'required_if:decision,rejected', 'string', 'max:1000'],
         ]);
+
+        if ($validator->fails()) {
+            return redirect()
+                ->route('print-flows.show', $token)
+                ->withFragment($anchor)
+                ->withErrors($validator)
+                ->withInput()
+                ->with('active_review_testimonial_id', $testimonial->id)
+                ->with('review_validation_errors', $validator->errors()->all());
+        }
+
+        $validated = $validator->validated();
 
         $review = PrintFlowReview::create([
             'event_id' => $flow->event_id,
@@ -78,7 +92,12 @@ class PrintFlowPortalController extends Controller
             'decision' => $review->decision,
         ], $request);
 
-        return back()->with('success', 'Decisão registrada para a carta de '.$testimonial->sender_name.'.');
+        return redirect()
+            ->route('print-flows.show', $token)
+            ->withFragment($anchor)
+            ->with('success', 'Decisão registrada para a carta de '.$testimonial->sender_name.'.')
+            ->with('active_review_testimonial_id', $testimonial->id)
+            ->with('review_saved_testimonial_id', $testimonial->id);
     }
 
     public function finishReview(

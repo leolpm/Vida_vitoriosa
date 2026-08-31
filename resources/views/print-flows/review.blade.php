@@ -32,6 +32,10 @@
                 $history = $reviewHistory->get($testimonial->id, collect());
                 $previousHistory = $history->where('print_flow_id', '!=', $flow->id);
                 $reevaluationCount = $previousHistory->filter(fn ($item) => $item->printFlow?->type === 'reevaluation')->count();
+                $isActiveReview = (int) session('active_review_testimonial_id') === $testimonial->id;
+                $reviewErrors = $isActiveReview ? session('review_validation_errors', []) : [];
+                $decisionValue = $isActiveReview ? old('decision', $review?->decision ?? 'approved') : ($review?->decision ?? 'approved');
+                $reasonValue = $isActiveReview ? old('rejection_reason', $review?->rejection_reason) : $review?->rejection_reason;
             @endphp
             <article class="flow-card">
                 <div class="row g-4">
@@ -63,19 +67,32 @@
                         <div class="col-12 col-lg-4"><img src="{{ $testimonial->photo_url }}" class="img-fluid rounded-4 border w-100" style="max-height:420px;object-fit:contain" alt="Foto enviada por {{ $testimonial->sender_name }}"></div>
                     @endif
                 </div>
-                <form method="POST" action="{{ route('print-flows.review', [$token, $testimonial]) }}" class="mt-4 border-top pt-3" data-review-form>
+                <form method="POST" action="{{ route('print-flows.review', [$token, $testimonial]) }}" class="review-form mt-4 border-top pt-3" id="revisao-carta-{{ $testimonial->id }}" data-review-form>
                     @csrf
+                    @if((int) session('review_saved_testimonial_id') === $testimonial->id)
+                        <div class="alert alert-success border-0 py-2 px-3 mb-3" role="status"><i class="bi bi-check-circle me-1"></i>Decisão salva. Continue a revisão a partir desta carta.</div>
+                    @endif
+                    @if($reviewErrors !== [])
+                        <div class="alert alert-danger border-0 py-2 px-3 mb-3" role="alert">
+                            <div class="fw-semibold mb-1">Revise os campos desta carta:</div>
+                            <ul class="mb-0 ps-3">
+                                @foreach($reviewErrors as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
                     <div class="row g-3 align-items-end">
                         <div class="col-12 col-md-4">
                             <label class="form-label fw-semibold">Decisão</label>
                             <select name="decision" class="form-select" data-decision required>
-                                <option value="approved" @selected($review?->decision === 'approved')>Aprovar carta</option>
-                                <option value="rejected" @selected($review?->decision === 'rejected')>Reprovar carta</option>
+                                <option value="approved" @selected($decisionValue === 'approved')>Aprovar carta</option>
+                                <option value="rejected" @selected($decisionValue === 'rejected')>Reprovar carta</option>
                             </select>
                         </div>
                         <div class="col-12 col-md-6" data-reason-wrap>
                             <label class="form-label fw-semibold">Motivo da reprovação</label>
-                            <input name="rejection_reason" class="form-control" value="{{ $review?->rejection_reason }}" maxlength="1000" data-reason>
+                            <input name="rejection_reason" class="form-control" value="{{ $reasonValue }}" maxlength="1000" data-reason>
                         </div>
                         <div class="col-12 col-md-2"><button class="btn btn-outline-dark w-100" data-loading-text="Salvando revisão...">Salvar</button></div>
                     </div>
@@ -106,6 +123,20 @@
 @endif
 @endsection
 
+@push('styles')
+<style>
+    .review-form {
+        scroll-margin-block: 2rem;
+    }
+
+    .review-form:target {
+        border-radius: .75rem;
+        outline: 3px solid color-mix(in srgb, var(--flow-accent) 45%, transparent);
+        outline-offset: .65rem;
+    }
+</style>
+@endpush
+
 @push('scripts')
 <script>
 document.querySelectorAll('[data-review-form]').forEach((form) => {
@@ -120,5 +151,23 @@ document.querySelectorAll('[data-review-form]').forEach((form) => {
     decision.addEventListener('change', sync);
     sync();
 });
+
+const restoreReviewPosition = () => {
+    const targetId = window.location.hash.slice(1);
+
+    if (! targetId.startsWith('revisao-carta-')) {
+        return;
+    }
+
+    const target = document.getElementById(targetId);
+
+    if (! target?.matches('[data-review-form]')) {
+        return;
+    }
+
+    target.scrollIntoView({ behavior: 'auto', block: 'center' });
+};
+
+window.addEventListener('load', () => window.requestAnimationFrame(restoreReviewPosition));
 </script>
 @endpush

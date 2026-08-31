@@ -173,14 +173,32 @@ class PrintFlowTest extends TestCase
     {
         [$flow, $plainToken, $testimonial] = $this->createDistributedFlow();
         $base = $this->eventUrl('vida-vitoriosa', '/fluxos/'.$plainToken);
+        $reviewAnchor = '#revisao-carta-'.$testimonial->id;
 
         $this->get($base)->assertOk()->assertSeeText('Revisar cartas');
         $this->post($base.'/cartas/'.$testimonial->id, ['decision' => 'rejected'])
-            ->assertSessionHasErrors('rejection_reason');
+            ->assertRedirect($base.$reviewAnchor)
+            ->assertSessionHasErrors('rejection_reason')
+            ->assertSessionHasInput('decision', 'rejected');
+
+        $this->get($base)
+            ->assertOk()
+            ->assertSeeText('Revise os campos desta carta:')
+            ->assertSee('id="revisao-carta-'.$testimonial->id.'"', false)
+            ->assertSee('option value="rejected" selected', false);
+
         $this->post($base.'/cartas/'.$testimonial->id, [
             'decision' => 'approved',
             'rejection_reason' => '',
-        ])->assertRedirect();
+        ])->assertRedirect($base.$reviewAnchor)
+            ->assertSessionHas('active_review_testimonial_id', $testimonial->id)
+            ->assertSessionHas('review_saved_testimonial_id', $testimonial->id);
+
+        $this->get($base)
+            ->assertOk()
+            ->assertSee('id="revisao-carta-'.$testimonial->id.'"', false)
+            ->assertSeeText('Decisão salva. Continue a revisão a partir desta carta.')
+            ->assertSee("target.scrollIntoView({ behavior: 'auto', block: 'center' })", false);
 
         $this->post($base.'/concluir-revisao')->assertRedirect();
         $flow->refresh();
@@ -194,6 +212,55 @@ class PrintFlowTest extends TestCase
         $this->post($base.'/concluir', ['printed_confirmation' => '1'])->assertRedirect();
         $this->assertDatabaseHas('print_flows', ['id' => $flow->id, 'status' => 'completed']);
         $this->assertDatabaseHas('print_flow_audits', ['print_flow_id' => $flow->id, 'action' => 'print_completed']);
+    }
+
+    public function test_reevaluation_review_returns_to_the_reviewed_letter(): void
+    {
+        [$mainFlow, , $testimonial] = $this->createDistributedFlow();
+        $mainFlow->update(['status' => 'completed', 'current_step' => 'complete', 'completed_at' => now()]);
+        PrintFlowReview::create([
+            'print_flow_id' => $mainFlow->id,
+            'testimonial_id' => $testimonial->id,
+            'team_member_id' => $mainFlow->team_member_id,
+            'decision' => 'rejected',
+            'rejection_reason' => 'Precisa de nova avaliação',
+            'decided_at' => now(),
+        ]);
+
+        $request = Request::create($this->eventUrl('vida-vitoriosa', '/admin/print-flows'), 'POST');
+        $result = app(PrintFlowManager::class)->distribute([
+            'participant_id' => $mainFlow->participant_id,
+            'team_member_id' => $mainFlow->team_member_id,
+            'type' => 'reevaluation',
+            'testimonial_ids' => [$testimonial->id],
+        ], User::factory()->create()->id, $request);
+        $plainToken = basename(parse_url($result['access_url'], PHP_URL_PATH));
+        $base = $this->eventUrl('vida-vitoriosa', '/fluxos/'.$plainToken);
+
+        $this->get($base)->assertOk()->assertSeeText('Reavaliação de cartas');
+        $this->post($base.'/cartas/'.$testimonial->id, [
+            'decision' => 'rejected',
+            'rejection_reason' => 'Ainda precisa de ajuste',
+        ])->assertRedirect($base.'#revisao-carta-'.$testimonial->id);
+
+        $this->assertDatabaseHas('print_flow_reviews', [
+            'print_flow_id' => $result['flow']->id,
+            'testimonial_id' => $testimonial->id,
+            'decision' => 'rejected',
+            'rejection_reason' => 'Ainda precisa de ajuste',
+        ]);
+    }
+
+    public function test_each_review_form_has_a_unique_anchor(): void
+    {
+        [$flow, $plainToken, $firstTestimonial] = $this->createDistributedFlow();
+        $secondTestimonial = $this->testimonial($flow->participant, 'Segunda autora');
+        $flow->testimonials()->attach($secondTestimonial->id, ['event_id' => $flow->event_id]);
+
+        $this->get($this->eventUrl('vida-vitoriosa', '/fluxos/'.$plainToken))
+            ->assertOk()
+            ->assertSee('id="revisao-carta-'.$firstTestimonial->id.'"', false)
+            ->assertSee('id="revisao-carta-'.$secondTestimonial->id.'"', false);
     }
 
     public function test_selected_subset_is_attached_and_tampered_letter_is_rejected(): void
