@@ -134,6 +134,8 @@ A distribuicao e vertical e dinamica: tipo, participantes, cartas, membro e resu
 
 A pagina de compartilhamento mostra o token original somente na primeira abertura depois da criacao ou renovacao. Depois disso, oferece a geracao de um novo link, preservando o armazenamento somente como hash.
 
+O botao `Copiar link` usa a Clipboard API em HTTPS e uma selecao compativel com HTTP local quando o navegador bloquear essa API. Se ambos os mecanismos falharem, o campo permanece selecionado e a tela orienta a copia manual com `Ctrl+C`.
+
 As configuracoes incluem limite global, validade, acessos por link e minimo de depoimentos do evento.
 
 O portal externo exibe:
@@ -257,3 +259,4 @@ http://edd.atitudelaranja.test:8888/fluxos/demo-edd-busca-depoimentos
 | 2026-08-18 | Implementacao da distribuicao dinamica, cartoes operacionais, filtro multiplo, historico de reavaliacoes e pagina de compartilhamento | Alinhar a operacao administrativa aos candidatos elegiveis e melhorar a rastreabilidade das tarefas |
 | 2026-08-19 | Integracao do feedback global nas acoes do fluxo | Impedir envios repetidos e informar o processamento sem bloquear controles locais |
 | 2026-08-19 | Ampliacao deterministica dos dados locais para 10 participantes e 51 cartas por evento | Permitir validar filas, imagens, paginacao, reavaliacoes e os tres tipos de fluxo sem usar dados reais |
+| 2026-08-30 | Correcao da copia do link temporario em origens HTTP locais | Oferecer fallback quando a Clipboard API estiver indisponivel por falta de contexto seguro |

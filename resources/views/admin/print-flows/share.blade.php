@@ -20,11 +20,12 @@
             @if($share)
                 <div class="share-link-panel p-4 rounded-4 mb-4">
                     <div class="section-eyebrow text-success mb-2">Link temporário disponível</div>
-                    <div class="form-control form-control-lg bg-white text-break mb-3" id="share-url">{{ $share['access_url'] }}</div>
+                    <textarea class="form-control form-control-lg bg-white share-url mb-3" id="share-url" rows="2" readonly spellcheck="false">{{ $share['access_url'] }}</textarea>
                     <div class="d-flex flex-wrap gap-2">
-                        <button class="btn btn-outline-dark btn-lg" type="button" data-copy-url="{{ $share['access_url'] }}"><i class="bi bi-copy me-1"></i>Copiar link</button>
+                        <button class="btn btn-outline-dark btn-lg" type="button" data-copy-url="{{ $share['access_url'] }}" data-copy-target="#share-url" aria-describedby="copy-link-feedback"><i class="bi bi-copy me-1"></i>Copiar link</button>
                         <a class="btn btn-success btn-lg" href="{{ $share['whatsapp_url'] }}" target="_blank" rel="noopener"><i class="bi bi-whatsapp me-1"></i>Abrir WhatsApp Web</a>
                     </div>
+                    <div class="small mt-2" id="copy-link-feedback" role="status" aria-live="polite"></div>
                     <div class="small text-secondary mt-3">Válido até {{ $share['expires_at'] }} · {{ $share['max_accesses'] }} acesso(s) permitido(s).</div>
                 </div>
             @else
@@ -75,15 +76,96 @@
         background: linear-gradient(135deg, rgba(25, 135, 84, .10), rgba(25, 135, 84, .03));
         border: 1px solid rgba(25, 135, 84, .18);
     }
+
+    .share-url {
+        min-height: 5rem;
+        resize: none;
+        overflow-wrap: anywhere;
+    }
 </style>
 @endpush
 
 @push('scripts')
 <script>
+const copyText = async (text, target) => {
+    if (window.isSecureContext && navigator.clipboard?.writeText) {
+        try {
+            await navigator.clipboard.writeText(text);
+
+            return true;
+        } catch (error) {
+            // Browsers can still deny the Clipboard API; the selected field is the local fallback.
+        }
+    }
+
+    target.focus();
+    target.select();
+    target.setSelectionRange(0, target.value.length);
+
+    let copyEventHandled = false;
+    const handleCopy = (event) => {
+        if (! event.clipboardData) {
+            return;
+        }
+
+        event.clipboardData.setData('text/plain', text);
+        event.preventDefault();
+        copyEventHandled = true;
+    };
+
+    document.addEventListener('copy', handleCopy);
+
+    try {
+        return document.execCommand('copy') && copyEventHandled;
+    } finally {
+        document.removeEventListener('copy', handleCopy);
+    }
+};
+
 document.querySelectorAll('[data-copy-url]').forEach((button) => {
     button.addEventListener('click', async () => {
-        await navigator.clipboard.writeText(button.dataset.copyUrl);
-        button.innerHTML = '<i class="bi bi-check2 me-1"></i>Link copiado';
+        const target = document.querySelector(button.dataset.copyTarget);
+        const feedback = document.getElementById('copy-link-feedback');
+        const originalHtml = button.innerHTML;
+
+        if (!(target instanceof HTMLTextAreaElement)) {
+            return;
+        }
+
+        window.clearTimeout(button.copyResetTimeout);
+        button.disabled = true;
+
+        try {
+            const copied = await copyText(button.dataset.copyUrl, target);
+
+            if (! copied) {
+                throw new Error('O navegador recusou a cópia.');
+            }
+
+            button.innerHTML = '<i class="bi bi-check2 me-1"></i>Link copiado';
+            button.classList.add('btn-success');
+            button.classList.remove('btn-outline-dark');
+            feedback.textContent = 'Link copiado para a área de transferência.';
+            feedback.className = 'small mt-2 text-success';
+        } catch (error) {
+            target.focus();
+            target.select();
+            button.innerHTML = '<i class="bi bi-exclamation-circle me-1"></i>Copie manualmente';
+            button.classList.add('btn-danger');
+            button.classList.remove('btn-outline-dark');
+            feedback.textContent = 'Não foi possível copiar automaticamente. O link foi selecionado; pressione Ctrl+C.';
+            feedback.className = 'small mt-2 text-danger';
+        } finally {
+            button.disabled = false;
+
+            button.copyResetTimeout = window.setTimeout(() => {
+                button.innerHTML = originalHtml;
+                button.classList.remove('btn-success', 'btn-danger');
+                button.classList.add('btn-outline-dark');
+                feedback.textContent = '';
+                feedback.className = 'small mt-2';
+            }, 4500);
+        }
     });
 });
 </script>

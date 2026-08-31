@@ -44,6 +44,8 @@ Quando uma documentacao de modulo ou planejamento tocar em UI compartilhada, ela
 - filtros automaticos sem botao exibem um indicador inline
 - links de download ou abertura de relatorio usam feedback temporario de preparacao
 - controles locais, como menu, modal, copiar link, selecao de itens e `window.print()`, nao usam carregamento
+- a copia de links usa a Clipboard API em contexto seguro e fallback por selecao em origens HTTP locais
+- falhas de copia automatica mantem o link selecionado e exibem orientacao acessivel para `Ctrl+C`
 - formularios podem personalizar o texto com `data-loading-text` e sair do comportamento com `data-loading-ignore`
 - links de servidor usam `data-server-action`; a preferencia `prefers-reduced-motion` deve ser respeitada
 
@@ -54,3 +56,4 @@ Quando uma documentacao de modulo ou planejamento tocar em UI compartilhada, ela
 | 2026-08-18 | Criacao das regras compartilhadas de UI | Preservar a identidade visual existente nas novas versoes |
 | 2026-08-18 | Inclusao das variacoes por evento e regras responsivas | Documentar a identidade EDD e o comportamento validado em desktop e celular |
 | 2026-08-19 | Padronizacao do feedback de requisicoes | Evitar cliques duplicados e tornar o processamento visivel nos tres ambientes do sistema |
+| 2026-08-30 | Inclusao do fallback para copia de links em HTTP local | Manter a acao funcional quando a Clipboard API exigir contexto seguro |

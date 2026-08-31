@@ -372,7 +372,12 @@ class PrintFlowTest extends TestCase
         $this->get($shareUrl)
             ->assertOk()
             ->assertSeeText('Link temporário disponível')
-            ->assertSeeText('Abrir WhatsApp Web');
+            ->assertSeeText('Abrir WhatsApp Web')
+            ->assertSee('data-copy-target="#share-url"', false)
+            ->assertSee('window.isSecureContext', false)
+            ->assertSee("document.execCommand('copy')", false)
+            ->assertSee("event.clipboardData.setData('text/plain', text)", false)
+            ->assertSee('Link copiado para a área de transferência.', false);
         $this->get($shareUrl)
             ->assertOk()
             ->assertSeeText('O link original não está mais disponível');
