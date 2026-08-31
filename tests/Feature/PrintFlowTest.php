@@ -263,6 +263,22 @@ class PrintFlowTest extends TestCase
             ->assertSee('id="revisao-carta-'.$secondTestimonial->id.'"', false);
     }
 
+    public function test_edd_review_returns_to_the_reviewed_letter(): void
+    {
+        [, $plainToken, $testimonial] = $this->createDistributedFlow('edd');
+        $base = $this->eventUrl('edd', '/fluxos/'.$plainToken);
+
+        $this->get($base)
+            ->assertOk()
+            ->assertSeeText('EDD')
+            ->assertSee('id="revisao-carta-'.$testimonial->id.'"', false);
+
+        $this->post($base.'/cartas/'.$testimonial->id, [
+            'decision' => 'approved',
+            'rejection_reason' => '',
+        ])->assertRedirect($base.'#revisao-carta-'.$testimonial->id);
+    }
+
     public function test_selected_subset_is_attached_and_tampered_letter_is_rejected(): void
     {
         $event = $this->useEvent('vida-vitoriosa');
@@ -456,13 +472,13 @@ class PrintFlowTest extends TestCase
         $this->assertSame(2, $flow->tokens()->count());
     }
 
-    private function createDistributedFlow(): array
+    private function createDistributedFlow(string $eventSlug = 'vida-vitoriosa'): array
     {
-        $event = $this->useEvent('vida-vitoriosa');
+        $event = $this->useEvent($eventSlug);
         $participant = Participant::create(['name' => 'Pessoa do Fluxo', 'status' => 'active']);
         $testimonial = $this->testimonial($participant, 'Autor da Carta');
         $member = $this->member($event, 'Operador', 10);
-        $request = Request::create($this->eventUrl('vida-vitoriosa', '/admin/print-flows'), 'POST');
+        $request = Request::create($this->eventUrl($eventSlug, '/admin/print-flows'), 'POST');
         $result = app(PrintFlowManager::class)->distribute([
             'participant_id' => $participant->id,
             'team_member_id' => $member->id,
