@@ -41,7 +41,7 @@ v2.0.0
 |---|---|---|
 | `v1.0.0` | Estavel e congelada | Sistema atual do Vida Vitoriosa em modo monoevento |
 | `v2.0.0` | Implantada e operacional em HTTPS | Arquitetura multi-evento, subdominios e formulario EDD |
-| `v3.0.0` | Implantada e validada em producao; tag pendente | Fluxo de Impressao multi-evento |
+| `v3.0.0` | Implantada, validada e publicada | Fluxo de Impressao multi-evento |
 
 ## 3.1 Versao 1.0.0 - Vida Vitoriosa
 
@@ -148,7 +148,8 @@ Estado atual:
 - testes automatizados aprovados com 49 testes e 444 assercoes
 - formularios e logins dos dois eventos validados em HTTPS
 - dados de demonstracao mantidos exclusivamente nos ambientes local e de teste
-- tag sera criada depois do registro final da limpeza autorizada dos backups
+- backups v2 e v3 removidos depois da validacao e do registro da implantacao
+- tag final `v3.0.0` publicada no commit documentado da release
 
 ---
 
@@ -231,3 +232,4 @@ Nao devem ser feitas alteracoes diretamente enquanto o repositorio estiver em es
 | 2026-08-18 | Atualizacao da v2.0.0 para operacional em HTTPS | Registrar a conclusao da ativacao do subdominio EDD |
 | 2026-08-18 | Atualizacao da v3.0.0 para implementada localmente e pendente de homologacao | Preservar a separacao entre implementacao, release e deploy |
 | 2026-08-30 | Atualizacao da v3.0.0 para implantada e validada em producao | Registrar a migration incremental, a preservacao dos dados e a preparacao da tag final |
+| 2026-08-30 | Conclusao da release v3.0.0 | Registrar a limpeza autorizada dos backups e a publicacao da tag estavel |
