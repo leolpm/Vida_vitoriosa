@@ -82,6 +82,7 @@ Uma carta sera elegivel quando:
 
 - pertencer ao participante e ao evento atuais
 - possuir status administrativo recebido, revisado ou aprovado
+- ainda nao possuir PDF gerado no fluxo legado
 - nao estiver arquivada
 - ainda nao possuir decisao no Fluxo de Impressao
 - nao estiver vinculada a outro fluxo aberto
@@ -438,7 +439,7 @@ O componente deve permitir uso por teclado, indicar foco e manter os atributos d
 
 ### Candidatos e cartoes
 
-- impressao principal lista cartas recebidas, revisadas ou aprovadas, nunca decididas e sem fluxo aberto
+- impressao principal lista cartas recebidas, revisadas ou aprovadas, sem PDF gerado, nunca decididas e sem fluxo aberto
 - cartao de impressao conta participantes distintos e informa o total de cartas
 - reavaliacao automatica lista somente cartas reprovadas que nunca passaram por reavaliacao
 - cartao de revisao exclui cartas ja reavaliadas
@@ -545,3 +546,4 @@ Os testes devem confirmar ausencia de mistura entre os eventos e ausencia de err
 | 2026-08-18 | Inclusao do filtro multisselecao de status na listagem de fluxos | Permitir que o administrador combine um ou varios estados das tarefas com os demais filtros de gestao |
 | 2026-08-18 | Implementacao local do escopo planejado com testes automatizados e validacao visual nos dois eventos | Registrar a conclusao tecnica sem declarar homologacao, release ou implantacao em producao |
 | 2026-09-01 | Alteracao da elegibilidade da impressao principal para cartas pendentes | Transferir a primeira avaliacao para o Fluxo de Impressao sem excluir cartas legadas aprovadas |
+| 2026-09-01 | Protecao contra retorno de cartas ja impressas | Excluir da fila principal cartas com `is_pdf_generated` marcado pelo fluxo legado |

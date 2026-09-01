@@ -23,7 +23,7 @@ O PDF legado permanece disponivel no menu como `PDFs legados` ate a validacao e 
 11. o membro abre a impressao do navegador
 12. o fluxo somente e concluido depois da confirmacao explicita
 
-Uma carta e elegivel para impressao principal quando possui status `received`, `reviewed` ou `approved`, nao esta arquivada, nunca recebeu decisao no Fluxo de Impressao e nao pertence a outro fluxo aberto. Isso permite que cartas pendentes enviadas pelo formulario entrem diretamente na primeira revisao e preserva a compatibilidade com cartas legadas ja aprovadas.
+Uma carta e elegivel para impressao principal quando possui status `received`, `reviewed` ou `approved`, ainda nao possui PDF gerado, nao esta arquivada, nunca recebeu decisao no Fluxo de Impressao e nao pertence a outro fluxo aberto. Isso permite que cartas pendentes enviadas pelo formulario entrem diretamente na primeira revisao, preserva cartas legadas ainda nao impressas e impede que cartas ja geradas retornem para a fila.
 
 Ao registrar a decisao inicial ou uma reavaliacao, o sistema sincroniza o status administrativo: aprovacao define `approved`; reprovacao define `reviewed`. A decisao `rejected`, o motivo e o responsavel permanecem no historico imutavel do Fluxo de Impressao.
 
@@ -267,3 +267,4 @@ http://edd.atitudelaranja.test:8888/fluxos/demo-edd-busca-depoimentos
 | 2026-08-30 | Correcao da copia do link temporario em origens HTTP locais | Oferecer fallback quando a Clipboard API estiver indisponivel por falta de contexto seguro |
 | 2026-08-30 | Retomada da posicao da carta apos salvar uma revisao | Evitar que revisoes iniciais e reavaliacoes retornem ao topo da pagina |
 | 2026-09-01 | Inclusao de cartas pendentes na impressao principal | Fazer a primeira aprovacao ou reprovacao dentro do Fluxo de Impressao e sincronizar o status administrativo |
+| 2026-09-01 | Exclusao de cartas legadas ja impressas da fila principal | Respeitar `is_pdf_generated` e impedir reimpressao involuntaria de cartas concluidas no fluxo legado |

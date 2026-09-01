@@ -176,6 +176,11 @@ class PrintFlowTest extends TestCase
         $received = $this->testimonial($participant, 'Carta recebida', 'received');
         $reviewed = $this->testimonial($participant, 'Carta revisada', 'reviewed');
         $approved = $this->testimonial($participant, 'Carta aprovada legada', 'approved');
+        $alreadyGenerated = $this->testimonial($participant, 'Carta legada ja impressa', 'approved');
+        $alreadyGenerated->update([
+            'is_pdf_generated' => true,
+            'pdf_generated_at' => now(),
+        ]);
         $this->testimonial($participant, 'Carta arquivada', 'archived');
 
         $options = app(PrintFlowCandidateService::class)->options('main_print');
@@ -185,6 +190,10 @@ class PrintFlowTest extends TestCase
         $this->assertSame(3, $options['participants']->first()['eligible_count']);
         $this->assertEqualsCanonicalizing(
             [$received->id, $reviewed->id, $approved->id],
+            $options['participants']->first()['testimonials']->pluck('id')->all(),
+        );
+        $this->assertNotContains(
+            $alreadyGenerated->id,
             $options['participants']->first()['testimonials']->pluck('id')->all(),
         );
         $this->assertSame(1, $dashboard['main_candidates_count']);

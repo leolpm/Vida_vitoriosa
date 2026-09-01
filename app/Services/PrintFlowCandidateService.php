@@ -123,6 +123,7 @@ class PrintFlowCandidateService
 
         if ($type === 'main_print') {
             return in_array($testimonial->status, Testimonial::MAIN_PRINT_ELIGIBLE_STATUSES, true)
+                && ! $testimonial->is_pdf_generated
                 && $reviews->isEmpty();
         }
 
