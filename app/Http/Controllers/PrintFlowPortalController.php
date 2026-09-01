@@ -76,21 +76,33 @@ class PrintFlowPortalController extends Controller
 
         $validated = $validator->validated();
 
-        $review = PrintFlowReview::create([
-            'event_id' => $flow->event_id,
-            'print_flow_id' => $flow->id,
-            'testimonial_id' => $testimonial->id,
-            'team_member_id' => $flow->team_member_id,
-            'decision' => $validated['decision'],
-            'rejection_reason' => $validated['decision'] === 'rejected' ? $validated['rejection_reason'] : null,
-            'decided_at' => now(),
-        ]);
+        $review = DB::transaction(function () use ($flow, $testimonial, $validated, $manager, $request): PrintFlowReview {
+            $previousStatus = $testimonial->status;
+            $review = PrintFlowReview::create([
+                'event_id' => $flow->event_id,
+                'print_flow_id' => $flow->id,
+                'testimonial_id' => $testimonial->id,
+                'team_member_id' => $flow->team_member_id,
+                'decision' => $validated['decision'],
+                'rejection_reason' => $validated['decision'] === 'rejected' ? $validated['rejection_reason'] : null,
+                'decided_at' => now(),
+            ]);
 
-        $manager->audit($flow, 'team_member', $flow->team_member_id, 'testimonial_reviewed', null, [
-            'review_id' => $review->id,
-            'testimonial_id' => $testimonial->id,
-            'decision' => $review->decision,
-        ], $request);
+            $testimonial->update([
+                'status' => $review->decision === 'approved' ? 'approved' : 'reviewed',
+            ]);
+
+            $manager->audit($flow, 'team_member', $flow->team_member_id, 'testimonial_reviewed', [
+                'testimonial_status' => $previousStatus,
+            ], [
+                'review_id' => $review->id,
+                'testimonial_id' => $testimonial->id,
+                'decision' => $review->decision,
+                'testimonial_status' => $testimonial->status,
+            ], $request);
+
+            return $review;
+        });
 
         return redirect()
             ->route('print-flows.show', $token)

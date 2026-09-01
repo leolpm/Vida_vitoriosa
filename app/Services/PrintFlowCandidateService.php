@@ -122,7 +122,8 @@ class PrintFlowCandidateService
         $reviews = $this->orderedReviews($testimonial);
 
         if ($type === 'main_print') {
-            return $testimonial->status === 'approved' && $reviews->isEmpty();
+            return in_array($testimonial->status, Testimonial::MAIN_PRINT_ELIGIBLE_STATUSES, true)
+                && $reviews->isEmpty();
         }
 
         if ($type !== 'reevaluation') {

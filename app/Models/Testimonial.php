@@ -21,6 +21,12 @@ class Testimonial extends Model
         'archived' => 'Arquivado',
     ];
 
+    public const MAIN_PRINT_ELIGIBLE_STATUSES = [
+        'received',
+        'reviewed',
+        'approved',
+    ];
+
     protected $fillable = [
         'event_id',
         'participant_id',

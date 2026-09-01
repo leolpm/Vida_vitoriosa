@@ -169,6 +169,28 @@ class PrintFlowTest extends TestCase
             ->assertSeeText('0 de 3 depoimento(s)');
     }
 
+    public function test_pending_and_legacy_statuses_are_eligible_for_main_print(): void
+    {
+        $this->useEvent('vida-vitoriosa');
+        $participant = Participant::create(['name' => 'Participante Pendente', 'status' => 'active']);
+        $received = $this->testimonial($participant, 'Carta recebida', 'received');
+        $reviewed = $this->testimonial($participant, 'Carta revisada', 'reviewed');
+        $approved = $this->testimonial($participant, 'Carta aprovada legada', 'approved');
+        $this->testimonial($participant, 'Carta arquivada', 'archived');
+
+        $options = app(PrintFlowCandidateService::class)->options('main_print');
+        $dashboard = app(PrintFlowCandidateService::class)->dashboardData();
+
+        $this->assertCount(1, $options['participants']);
+        $this->assertSame(3, $options['participants']->first()['eligible_count']);
+        $this->assertEqualsCanonicalizing(
+            [$received->id, $reviewed->id, $approved->id],
+            $options['participants']->first()['testimonials']->pluck('id')->all(),
+        );
+        $this->assertSame(1, $dashboard['main_candidates_count']);
+        $this->assertSame(3, $dashboard['main_letters_count']);
+    }
+
     public function test_review_print_and_completion_flow(): void
     {
         [$flow, $plainToken, $testimonial] = $this->createDistributedFlow();
@@ -193,6 +215,10 @@ class PrintFlowTest extends TestCase
         ])->assertRedirect($base.$reviewAnchor)
             ->assertSessionHas('active_review_testimonial_id', $testimonial->id)
             ->assertSessionHas('review_saved_testimonial_id', $testimonial->id);
+        $this->assertDatabaseHas('testimonials', [
+            'id' => $testimonial->id,
+            'status' => 'approved',
+        ]);
 
         $this->get($base)
             ->assertOk()
@@ -212,6 +238,27 @@ class PrintFlowTest extends TestCase
         $this->post($base.'/concluir', ['printed_confirmation' => '1'])->assertRedirect();
         $this->assertDatabaseHas('print_flows', ['id' => $flow->id, 'status' => 'completed']);
         $this->assertDatabaseHas('print_flow_audits', ['print_flow_id' => $flow->id, 'action' => 'print_completed']);
+    }
+
+    public function test_rejected_review_marks_pending_letter_as_reviewed(): void
+    {
+        [, $plainToken, $testimonial] = $this->createDistributedFlow();
+        $base = $this->eventUrl('vida-vitoriosa', '/fluxos/'.$plainToken);
+
+        $this->post($base.'/cartas/'.$testimonial->id, [
+            'decision' => 'rejected',
+            'rejection_reason' => 'Conteúdo precisa ser revisto.',
+        ])->assertRedirect($base.'#revisao-carta-'.$testimonial->id);
+
+        $this->assertDatabaseHas('testimonials', [
+            'id' => $testimonial->id,
+            'status' => 'reviewed',
+        ]);
+        $this->assertDatabaseHas('print_flow_reviews', [
+            'testimonial_id' => $testimonial->id,
+            'decision' => 'rejected',
+            'rejection_reason' => 'Conteúdo precisa ser revisto.',
+        ]);
     }
 
     public function test_reevaluation_review_returns_to_the_reviewed_letter(): void
@@ -476,7 +523,7 @@ class PrintFlowTest extends TestCase
     {
         $event = $this->useEvent($eventSlug);
         $participant = Participant::create(['name' => 'Pessoa do Fluxo', 'status' => 'active']);
-        $testimonial = $this->testimonial($participant, 'Autor da Carta');
+        $testimonial = $this->testimonial($participant, 'Autor da Carta', 'received');
         $member = $this->member($event, 'Operador', 10);
         $request = Request::create($this->eventUrl($eventSlug, '/admin/print-flows'), 'POST');
         $result = app(PrintFlowManager::class)->distribute([
@@ -490,7 +537,7 @@ class PrintFlowTest extends TestCase
         return [$result['flow'], $plainToken, $testimonial];
     }
 
-    private function testimonial(Participant $participant, string $sender): Testimonial
+    private function testimonial(Participant $participant, string $sender, string $status = 'approved'): Testimonial
     {
         return Testimonial::create([
             'participant_id' => $participant->id,
@@ -498,7 +545,7 @@ class PrintFlowTest extends TestCase
             'phone' => '+5521999991234',
             'relationship' => 'Amigo',
             'message' => 'Mensagem curta para impressão.',
-            'status' => 'approved',
+            'status' => $status,
         ]);
     }
 

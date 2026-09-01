@@ -81,10 +81,12 @@ A lista deve mostrar somente participantes ativos que possuam pelo menos uma car
 Uma carta sera elegivel quando:
 
 - pertencer ao participante e ao evento atuais
-- possuir status administrativo aprovado
+- possuir status administrativo recebido, revisado ou aprovado
 - nao estiver arquivada
 - ainda nao possuir decisao no Fluxo de Impressao
 - nao estiver vinculada a outro fluxo aberto
+
+O formulario publico continua criando a carta como recebida e pendente. A primeira decisao ocorre neste fluxo: uma aprovacao altera o status administrativo para aprovado; uma reprovacao altera o status para revisado e preserva a decisao recusada no historico.
 
 Cada participante deve mostrar a quantidade de cartas elegiveis.
 
@@ -180,7 +182,7 @@ O cartao deve apresentar:
 
 A contagem deve ignorar cartas:
 
-- arquivadas ou sem aprovacao administrativa
+- arquivadas ou com status diferente de recebido, revisado e aprovado
 - ja decididas no Fluxo de Impressao
 - vinculadas a um fluxo aberto
 
@@ -436,7 +438,7 @@ O componente deve permitir uso por teclado, indicar foco e manter os atributos d
 
 ### Candidatos e cartoes
 
-- impressao principal lista somente cartas aprovadas administrativamente, nunca decididas e sem fluxo aberto
+- impressao principal lista cartas recebidas, revisadas ou aprovadas, nunca decididas e sem fluxo aberto
 - cartao de impressao conta participantes distintos e informa o total de cartas
 - reavaliacao automatica lista somente cartas reprovadas que nunca passaram por reavaliacao
 - cartao de revisao exclui cartas ja reavaliadas
@@ -542,3 +544,4 @@ Os testes devem confirmar ausencia de mistura entre os eventos e ausencia de err
 | 2026-08-18 | Criacao do planejamento evolutivo da distribuicao, cartoes operacionais, fila automatica e manual de reavaliacao, contadores e historico de revisores | Consolidar as melhorias solicitadas sem confundir o comportamento futuro com o modulo ja implementado |
 | 2026-08-18 | Inclusao do filtro multisselecao de status na listagem de fluxos | Permitir que o administrador combine um ou varios estados das tarefas com os demais filtros de gestao |
 | 2026-08-18 | Implementacao local do escopo planejado com testes automatizados e validacao visual nos dois eventos | Registrar a conclusao tecnica sem declarar homologacao, release ou implantacao em producao |
+| 2026-09-01 | Alteracao da elegibilidade da impressao principal para cartas pendentes | Transferir a primeira avaliacao para o Fluxo de Impressao sem excluir cartas legadas aprovadas |
